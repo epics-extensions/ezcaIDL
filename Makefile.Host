@@ -29,7 +29,7 @@ LIBSRCS := ezcaIDL.c
 LIBRARY := ezcaIDL
 
 #	need additional libs to build
-PROD_LIBS_DEFAULT :=  EzcaScan ezca ca Com
+PROD_LIBS_DEFAULT :=  ezcaScan ezca ca Com
 ###PROD_LIBS_WIN32 := ezcaScanObj ezca ca Com
 ezca_DIR=$(INSTALL_LIB)
 ezcaScan_DIR=$(INSTALL_LIB)
