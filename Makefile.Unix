@@ -8,14 +8,13 @@ DEPLIBS =  $(EPICS_EXTENSIONS_LIB)/libezca.a \
            $(EPICS_BASE_LIB)/libca.a \
            $(EPICS_BASE_LIB)/libCom.a 
 
-USR_INCLUDES = -I$(INSTALL_INCLUDE) -I$(EPICS_EXTENSIONS_INCLUDE)
-ifeq ($(T_A),sun4)
+USR_INCLUDES = $(CC_SHARED) -I$(INSTALL_INCLUDE) -I$(EPICS_EXTENSIONS_INCLUDE)
+ifeq ($(HOST_ARCH),sun4)
    USR_LDLIBS = -Bstatic -lezca -Bdynamic -lca -lCom -lansi
-   USR_LDFLAGS = -L$(INSTALL_LIB)  -L$(EPICS_EXTENSIONS_LIB)
-   SPECIAL_LANG = /usr/lang/SC1.0patch
+   USR_LDFLAGS = $(LD_SHARED) -L$(INSTALL_LIB)  -L$(EPICS_EXTENSIONS_LIB)
 else
    USR_LDLIBS = -lezca -lca -lCom
-   USR_LDFLAGS = -L$(INSTALL_LIB)  -L$(EPICS_EXTENSIONS_LIB)
+   USR_LDFLAGS = -L. $(LD_SHARED) -L$(INSTALL_LIB)  -L$(EPICS_EXTENSIONS_LIB)
 endif
 
 SRCS.c = ../ezcaIDL.c
@@ -28,10 +27,10 @@ DOCS = ezcaIDLGuide.html ezcaIDLRef.html
 include $(EPICS)/config/RULES.Unix
 
 ezcaIDL.so : $(OBJS) $(DEPLIBS)
-	ld $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS)
+	ld -L/usr/lang/SC1.0 $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS)
 
 ezcaWave.so : $(OBJS1) $(DEPLIBS)
-	ld $(LDFLAGS) -o $@ $(OBJS1) $(LDLIBS)
+	ld -L/usr/lang/SC1.0 $(LDFLAGS) -o $@ $(OBJS1) $(LDLIBS)
 
 
 ezcaIDL.o : $(SRCS.c)
