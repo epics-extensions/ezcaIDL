@@ -2656,7 +2656,7 @@ FUNCTION caScan, name, pvnames, nonames, npts, vals, add=add, get=get, clear=cle
     endif
 
 ; set npts, nonames
-    pvnms = ezcaStringToByte(pvname, nonames)
+    pvnms = ezcaStringToByte(pvnames, nonames)
     if (n_elements(max) eq 0) then begin
         st = caget(name+'.NPTS',npts)
         if npts le 0 then return, -1
