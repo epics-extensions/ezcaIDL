@@ -14,7 +14,7 @@ this routine, refer to the IDL Online Help Navigator
 or type: <P>
 <PRE>     ? mk_html_help</PRE><P>
 at the IDL command line prompt.<P>
-<STRONG>Last modified: </STRONG>Wed Feb 28 17:15:56 1996.<P>
+<STRONG>Last modified: </STRONG>Fri Apr 19 13:55:32 1996.<P>
  
 <HR>
  
@@ -31,6 +31,7 @@ at the IDL command line prompt.<P>
 <LI><A HREF="#CAGETCONTROLLIMITS">CAGETCONTROLLIMITS</A>
 <LI><A HREF="#CAGETCOUNTANDTYPE">CAGETCOUNTANDTYPE</A>
 <LI><A HREF="#CAGETENUMSTRINGS">CAGETENUMSTRINGS</A>
+<LI><A HREF="#CAGETERROR">CAGETERROR</A>
 <LI><A HREF="#CAGETGRAPHICLIMITS">CAGETGRAPHICLIMITS</A>
 <LI><A HREF="#CAGETPRECISION">CAGETPRECISION</A>
 <LI><A HREF="#CAGETRETRYCOUNT">CAGETRETRYCOUNT</A>
@@ -538,6 +539,8 @@ at the IDL command line prompt.<P>
 
  MODIFICATION HISTORY:
        Written by:	Ben-chin Cha      Dec, 1995	
+      04-11-96     bkc    If array get failed, only the pvnames not found are 
+                          reported
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -671,7 +674,7 @@ at the IDL command line prompt.<P>
 <A NAME="CAGETENUMSTRINGS">
 <H2>CAGETENUMSTRINGS</H2></A>
 <A HREF="#CAGETCOUNTANDTYPE">[Previous Routine]</A>
-<A HREF="#CAGETGRAPHICLIMITS">[Next Routine]</A>
+<A HREF="#CAGETERROR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -736,9 +739,63 @@ at the IDL command line prompt.<P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
  
+<A NAME="CAGETERROR">
+<H2>CAGETERROR</H2></A>
+<A HREF="#CAGETENUMSTRINGS">[Previous Routine]</A>
+<A HREF="#CAGETGRAPHICLIMITS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+	caGetError
+
+ PURPOSE:
+       This function get CA return codes for a list of process variable names.
+       Return code can be 0 or -1, 0 for success, -1 for failure.
+
+ CATEGORY:
+       EPICS Channel Access Interface
+
+ CALLING SEQUENCE:
+       Status = caGetError(Pvname,Err)
+
+ INPUTS:
+      Pvname: The variable for a list of process variables for which the 
+              channel access return code to be checked.
+
+ KEYWORD PARAMETERS:
+       None.
+
+ OUTPUTS:
+       Err:  The corresponding return code(s) for the Pvname(s) are returned.
+             Returns array of 0 or 1. 0 indicates success, 1 indicates failed. 
+
+ COMMON BLOCKS:
+       None.
+
+ SIDE EFFECTS:
+       This routine will causes a channel access search to take place if 
+       this is the first time pvnames has been referenced.
+
+ RESTRICTIONS:
+       None.
+
+ PROCEDURE:
+       This routine uses Ezca_get_error_array() from the Ezca library.
+
+ EXAMPLES:
+       IDL> print,caGetError('chademoai1')
+       IDL> x = ['chademoai1','chademoai2']
+       IDL> status = caGetError(x)
+
+ MODIFICATION HISTORY:
+       Written by:	Ben-chin Cha      Dec, 1995	
+</PRE><P>
+<STRONG>(See ezcaIDL.pro)</STRONG><P>
+<HR>
+ 
 <A NAME="CAGETGRAPHICLIMITS">
 <H2>CAGETGRAPHICLIMITS</H2></A>
-<A HREF="#CAGETENUMSTRINGS">[Previous Routine]</A>
+<A HREF="#CAGETERROR">[Previous Routine]</A>
 <A HREF="#CAGETPRECISION">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1147,17 +1204,18 @@ at the IDL command line prompt.<P>
     Single value monitor
 
        IDL> print,caMonitor('chademoai1',/add)
-       IDL> print,caMonitor('chademoai1',/get)
+       IDL> print,caMonitor('chademoai1',vals,/get)
        IDL> print,caMonitor('chademoai1',/clear)
 
     Use queue array monitor with maxqueue=100
  
        IDL> print, caMonitor('chademoai1',/add,/queue,maxqueue=100)
-       IDL> print, caMonitor('chademoai1',/get,/queue,maxqueue=100)
+       IDL> print, caMonitor('chademoai1',vals,num,overflow,/get,/queue,maxqueue=100)
        IDL> print, caMonitor('chademoai1',/clear,/queue)
 
  MODIFICATION HISTORY:
        Written by:	Ben-chin Cha      Dec, 1995	
+       04-12-96    bkc   Modified on line help syntax
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1489,6 +1547,7 @@ at the IDL command line prompt.<P>
 
  MODIFICATION HISTORY:
        Written by:	Ben-chin Cha      Dec, 1995	
+
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1542,6 +1601,7 @@ at the IDL command line prompt.<P>
 
  MODIFICATION HISTORY:
        Written by:	Ben-chin Cha      Dec, 1995	
+      04-11-96   bkc   Fix typo error names to name
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
