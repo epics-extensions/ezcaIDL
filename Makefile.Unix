@@ -8,13 +8,14 @@ DEPLIBS =  $(EPICS_EXTENSIONS_LIB)/libezca.a \
            $(EPICS_BASE_LIB)/libca.a \
            $(EPICS_BASE_LIB)/libCom.a 
 
-USR_INCLUDES = $(CC_SHARED) -I$(INSTALL_INCLUDE) -I$(EPICS_EXTENSIONS_INCLUDE)
+USR_INCLUDES = -I$(INSTALL_INCLUDE) -I$(EPICS_EXTENSIONS_INCLUDE)
 ifeq ($(T_A),sun4)
    USR_LDLIBS = -Bstatic -lezca -Bdynamic -lca -lCom -lansi
-   USR_LDFLAGS = $(LD_SHARED) -L/usr/lang/SC1.0/ansi_lib -L$(INSTALL_LIB)  -L$(EPICS_EXTENSIONS_LIB)
+   USR_LDFLAGS = -L$(INSTALL_LIB)  -L$(EPICS_EXTENSIONS_LIB)
+   SPECIAL_LANG = /usr/lang/SC1.0patch
 else
    USR_LDLIBS = -lezca -lca -lCom
-   USR_LDFLAGS = $(LD_SHARED) -L$(INSTALL_LIB)  -L$(EPICS_EXTENSIONS_LIB)
+   USR_LDFLAGS = -L$(INSTALL_LIB)  -L$(EPICS_EXTENSIONS_LIB)
 endif
 
 SRCS.c = ../ezcaIDL.c
