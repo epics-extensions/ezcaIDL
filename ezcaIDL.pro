@@ -1458,7 +1458,7 @@ FUNCTION caVersion
 ;
 	str='                                                                 '
         ln = call_ezca('EzcaVersion',str)
-	str = 'ezcaIDL 2.0 '+ strmid(str,0,42)
+	str = 'ezcaIDL 2.0 '+ strmid(str,0,50)
         return,str
 END
 
