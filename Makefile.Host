@@ -29,7 +29,7 @@ LIBSRCS := ezcaIDL.c
 LIBRARY := ezcaIDL
 
 #	need additional libs to build
-PROD_LIBS_DEFAULT :=  ezcaScan ezca ca Com
+PROD_LIBS_DEFAULT :=  EzcaScan ezca ca Com
 ###PROD_LIBS_WIN32 := ezcaScanObj ezca ca Com
 ezca_DIR=$(INSTALL_LIB)
 ezcaScan_DIR=$(INSTALL_LIB)
@@ -38,7 +38,7 @@ ezcaScanObj_DIR=$(INSTALL_LIB)
 ifeq ($(T_A),alpha)
 PROD := ezcaIDL.so
 ezcaIDL.so : ezcaIDL.c
-	ld -S -shared -o ezcaIDL.so ezcaIDL.o -L. -L$(INSTALL_LIB) -L$(EPICS_BASE)/lib/$(T_A) -lezca -lezcaScan -lca -lCom
+	ld -S -shared -o ezcaIDL.so ezcaIDL.o -L. -L$(INSTALL_LIB) -L$(EPICS_BASE)/lib/$(T_A) -lezca -lEzcaScan -lca -lCom
 endif
 
 
