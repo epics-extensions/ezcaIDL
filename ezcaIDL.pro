@@ -1850,7 +1850,53 @@ END
 
 ;
 ;
-FUNCTION caError, name, x
+FUNCTION caGetError, name, x
+;+
+; NAME:
+;	caGetError
+;
+; PURPOSE:
+;       This function get CA return codes for a list of process variable names.
+;       Return code can be 0 or -1, 0 for success, -1 for failure.
+;
+; CATEGORY:
+;       EPICS Channel Access Interface
+;
+; CALLING SEQUENCE:
+;       Status = caGetError(Pvname,Err)
+;
+; INPUTS:
+;      Pvname: The variable for a list of process variables for which the 
+;              channel access return code to be checked.
+;
+; KEYWORD PARAMETERS:
+;       None.
+;
+; OUTPUTS:
+;       Err:  The corresponding return code(s) for the Pvname(s) are returned.
+;             Returns array of 0 or 1. 0 indicates success, 1 indicates failed. 
+;
+; COMMON BLOCKS:
+;       None.
+;
+; SIDE EFFECTS:
+;       This routine will causes a channel access search to take place if 
+;       this is the first time pvnames has been referenced.
+;
+; RESTRICTIONS:
+;       None.
+;
+; PROCEDURE:
+;       This routine uses Ezca_get_error_array() from the Ezca library.
+;
+; EXAMPLES:
+;       IDL> print,caGetError('chademoai1')
+;       IDL> x = ['chademoai1','chademoai2']
+;       IDL> status = caGetError(x)
+;
+; MODIFICATION HISTORY:
+;       Written by:	Ben-chin Cha      Dec, 1995	
+;-
         no = n_elements(name)
 ; check for null string first
 for i=0,no-1 do begin
@@ -1861,10 +1907,10 @@ for i=0,no-1 do begin
         return,ln 
 END
 
-; help on caError
-PRO caError,help=help
+; help on caGetError
+PRO caGetError,help=help
         print,' '
-        print,"caError(name,err) - "
+        print,"caGetError(name,err) - "
         print,'         this function returns the status of last channel access'
 	print,'         call from Ezca library. 
 	print,'         It returns 0 if OK, returns  -1 if error occured.'
@@ -1875,7 +1921,7 @@ PRO caError,help=help
 	print,'      err  -   single or a list of error codes for the PV names
 	print,'
         print,' e.g.'
-        print,"         st = caError('idl_test:wf1',err)"
+        print,"         st = caGetError('idl_test:wf1',err)"
         print,' '
 END
 
@@ -2472,6 +2518,7 @@ FUNCTION caScan, name, pvnames, nonames, npts, vals, add=add, get=get, clear=cle
 ;
 ; MODIFICATION HISTORY:
 ;       Written by:	Ben-chin Cha      Dec, 1995	
+;
 ;-
 on_error,2		; Return to caller IF an error occurs
 	if n_elements(name) gt 1 then begin
@@ -2518,11 +2565,11 @@ on_error,2		; Return to caller IF an error occurs
 	end
 ; get
 	if (get) then begin
-;	vals = make_array(npts*nonames,/double)
 	vals = make_array(nonames,npts,/double)
 	ln = call_ezca('EzcaMonitorScan_Get',npts,nonames,vals,string(name))
 	return,ln
 	end
+
 END
 
 ;
