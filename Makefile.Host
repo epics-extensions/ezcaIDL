@@ -25,10 +25,12 @@ LIBSRCS := ezcaIDL.c
 #
 LIBRARY := ezcaIDL
 
-#	need additional libs to build
-PROD_LIBS_DEFAULT :=  EzcaScan ezca ca Com
+# need additional libs
+PROD_LIBS += EzcaScan ezca ca Com
 ezca_DIR=$(INSTALL_LIB)
 EzcaScan_DIR=$(INSTALL_LIB)
+ca_DIR=$(EPICS_BASE_LIB)
+Com_DIR=$(EPICS_BASE_LIB)
 
 include $(TOP)/config/RULES.Host
 
