@@ -2,11 +2,15 @@
 #include <cadef.h>
 #include <ezca.h>
 
-#include <Ezca.h>
+#include <EzcaScan.h>
+
+#define epicsExportSharedSymbols
+#include <shareLib.h>
+
 #define OK      0
 #undef ERROR
 #define ERROR   -1
-extern struct caGlobals CA;
+
 
 /* 	ezcaIDL.c
 *
@@ -18,13 +22,21 @@ extern struct caGlobals CA;
 *
 *	Author: Mark Rivers
 *	Date:	June 28, 1995
+*       
+*       Modifications:
+*       09-03-98  Mark Rivers.  Made work with WIN32 under IDL 5.1. It will not
+*                               work with WIN32 on earlier versions of IDL
+*                               because of the way IDL previously passed
+*                               strings.
 */
 
 /* The following macros allow for the differences in the way PV-WAVE and
 *  IDL pass character strings. PV-WAVE passes the address of the address
 *  of the string in argp[]. IDL passes the address of a string descriptor
-*  structure, which contains the address of the string as one of its elements */
+*  structure, which contains the address of the string as one of its elements 
+*/
 #ifdef IDL
+
 typedef struct {
    unsigned short length;
    short type;
@@ -66,25 +78,25 @@ static char* str_array_addr[1000];
 
 #else
 #   define WAVE_HEADER0(ftype, fname)\
-	  ftype fname(argc, argp)\
+	  epicsShareFunc ftype epicsShareAPI fname(argc, argp)\
 		  int argc;\
 		  void *argp[];\
 		  {
 #   define WAVE_HEADER1(ftype, fname, type1, arg1)\
-	  ftype fname(argc, argp)\
+	  epicsShareFunc ftype epicsShareAPI fname(argc, argp)\
 		  int argc;\
 		  void *argp[];\
 		  {\
 		  type1 *arg1 = (type1 *) argp[0];
 #   define WAVE_HEADER2(ftype, fname, type1, arg1, type2, arg2)\
-	  ftype fname(argc, argp)\
+	  epicsShareFunc ftype epicsShareAPI fname(argc, argp)\
 		  int argc;\
 		  void *argp[];\
 		  {\
 		  type1 *arg1 = (type1 *) argp[0];\
 		  type2 *arg2 = (type2 *) argp[1];
 #   define WAVE_HEADER3(ftype, fname, type1, arg1, type2, arg2, type3, arg3)\
-	  ftype fname(argc, argp)\
+	  epicsShareFunc ftype epicsShareAPI fname(argc, argp)\
 		  int argc;\
 		  void *argp[];\
 		  {\
@@ -92,7 +104,7 @@ static char* str_array_addr[1000];
 		  type2 *arg2 = (type2 *) argp[1];\
 		  type3 *arg3 = (type3 *) argp[2];
 #   define WAVE_HEADER4(ftype, fname, type1, arg1, type2, arg2, type3, arg3, type4, arg4)\
-	  ftype fname(argc, argp)\
+	  epicsShareFunc ftype epicsShareAPI fname(argc, argp)\
 		  int argc;\
 		  void *argp[];\
 		  {\
@@ -101,7 +113,7 @@ static char* str_array_addr[1000];
 		  type3 *arg3 = (type3 *) argp[2];\
 		  type4 *arg4 = (type4 *) argp[3];
 #   define WAVE_HEADER5(ftype, fname, type1, arg1, type2, arg2, type3, arg3, type4, arg4, type5, arg5)\
-	  ftype fname(argc, argp)\
+	  epicsShareFunc ftype epicsShareAPI fname(argc, argp)\
 		  int argc;\
 		  void *argp[];\
 		  {\
@@ -156,7 +168,11 @@ WAVE_HEADER4(int, ezcaIDLPut, STRARG, pvname, char, type, int, nelem, void, buff
    return(ezcaPut(STRADDR(pvname), *type, *nelem, buff));
 }
 
-WAVE_HEADER3(int, ezcaIDLGetCountAndType, STRARG, pvname, int, count, char,	type)
+WAVE_HEADER4(int, ezcaIDLPutOldCa, STRARG, pvname, char, type, int, nelem, void, buff)
+   return(ezcaPutOldCa(STRADDR(pvname), *type, *nelem, buff));
+}
+
+WAVE_HEADER3(int, ezcaIDLGetCountAndType, STRARG, pvname, int, count, char, type)
    int status;
    chid *chid;
 
@@ -313,10 +329,10 @@ int st;
 	return(st);
 }
 
-WAVE_HEADER2(int, EzcaSearchList, short, s, STRARG, str)
+WAVE_HEADER3(int, EzcaSearchList, short, s, STRARG, str, chandata, list)
 int i;
         BUILD_STR_ARRAY(*s, str);
-        return(Ezca_search_list(*s,STR_ARRAY_ADDR(str)));
+        return(Ezca_search_list(*s,STR_ARRAY_ADDR(str),&(*list)));
 }
 
 WAVE_HEADER3(int, EzcaGetError, short, s, int, val, STRARG, str)
