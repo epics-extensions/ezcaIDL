@@ -1418,6 +1418,7 @@ pro caError, err_string, on=on, off=off, print=print, prefix=prefix
 
 end
 
+
 ;******************************************************************
 ; added function by cha
 ;******************************************************************
@@ -1983,6 +1984,9 @@ print,'
 print,'            /EVENT     - If specified use the ca_array_get_callback
 print,'                         otherwise use the ca_array_get
 print,'
+print,'            /PRINT     - Only if this keyword is specified, then every 
+print,'                         channel not found will be printed.
+print,''
 print,' e.g.'
 print,"         names=['chademowf7','chademowf8']
 print,"         st = caGetArray(names,pdata)"
@@ -2046,7 +2050,7 @@ END
 
 FUNCTION caGetArray,names,pdata,max_no=max_no,type=type, $
 	event=event,double=double,string=string,float=float,long=long, $
-	short=short,integer=integer,byte=byte 
+	short=short,integer=integer,byte=byte , print=print
 ;+
 ; NAME:
 ;       caGetArray
@@ -2203,10 +2207,12 @@ else $
 	ln = call_ezca('EzcaGetArrayValues',ca_type,long(num),no, $
 		pdata,string(names))
 	IF ln NE 0 THEN begin
+		if keyword_set(print) then begin
 		ln = caGetError(names,p1)
 		for i=0,no-1 do begin
 		if p1(i) ne 0 then print,'Error: caGetArray failed on ',names(i)
 		end
+		endif else print,'Warning: some PV not found in caGetArray'
 		end
 	if wave_type eq 7 then pdata=string(pdata)
 	return,ln
