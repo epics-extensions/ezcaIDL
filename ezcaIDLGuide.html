@@ -1,0 +1,704 @@
+<HTML>
+<HEAD>
+<TITLE>ezcaIDL User's Guide</TITLE>
+</HEAD>
+
+<BODY>
+<H1>ezcaIDL User's Guide</H1>
+<EM>Mark Rivers<BR>
+Center for Advanced Radiation Sources<BR>
+University of Chicago<BR>
+rivers@cars3.uchicago.edu<BR>
+July 12, 1995<BR>
+</EM>                                
+
+<H2>Table of Contents</H2>
+<UL>
+<LI><A HREF="#Overview">Overview</A>
+<LI><A HREF="#Procedures">Procedures and Functions</A>
+<LI><A HREF="#Routines">List of Routines by Functional Group</A>
+<LI><A HREF="#Related">Related Documentation</A>
+<LI><A HREF="#Synchronous">Synchronous Groups</A>
+<LI><A HREF="#Error">Error Handling</A>
+<LI><A HREF="#Debugging">Debugging</A>
+<LI><A HREF="#Differences">Summary of differences between ezcaIDL and CaWave</A>
+<LI><A HREF="#Files">Files</A>
+<LI><A HREF="#Libraries">Required Support Libraries</A>
+<LI><A HREF="#UnixSetup">Unix Setup</A>
+<LI><A HREF="#VMSSetup">VMS Setup</A>
+<LI><A HREF="#Examples">Examples</A>
+<LI><A HREF="#Widgets">IDL Widgets</A>
+</UL>
+ 
+<H2><A NAME="Overview">Overview</A></H2>
+
+ezcaIDL is a library of routines for
+<A HREF="http://sslab.colorado.edu:2222/projects/IDL/idl_ssl_home.html">IDL</A> 
+and <A HREF="http://www.vni.com/pvwave.dir/wavehome.html">PV-WAVE</A>
+which provides an
+interface to EPICS Channel Access through the EZCA library.  
+<P>
+PV-WAVE and IDL are closely related packages which are described as 
+<CITE>Data Visualization Tools</CITE>.  They consist of 
+a general purpose interpreted language
+with very good graphics routines. Although not described as tools for data
+collection and control applications, their rapid prototyping capabilities and
+sophisticated graphics make them a nice environment for these applications.
+Both also provide easy to use widget toolkits for quickly developing GUI
+applications.
+<P>
+Although there is nearly a one-for-one match between the routines in ezcaIDL 
+and the EZCA library itself, the syntax of the IDL routines is not
+the same as the syntax of the corresponding EZCA routines.  The reason for this
+is that IDL is more "object oriented" and relieves the programmer of much of
+the detailed bookkeeping required of the C programmer.  Thus for example,  the
+IDL routine <CODE>caGet()</CODE> returns, by default, 
+a value which has the native data type
+and element count of the process variable.  This is not true of the
+corresponding C routine <CODE>ezcaGet()</CODE>, which requires the user to
+specify the data type and number of elements to be returned.
+<P>
+
+<H2><A NAME="Procedures">Procedures and Functions</A></H2>
+
+PV-WAVE and IDL are similar to FORTRAN in that they have two types of routines,
+procedures and functions. Procedure are similar to FORTRAN subroutines: they do
+not return a value. Functions, as in C or FORTRAN, return a value.  ezcaIDL
+uses functions for all EZCA routines which return either status or data.
+Procedures are used for routines which return <CODE>void</CODE>, i.e. 
+neither data nor status.
+
+Procedure and function names are not case sensitive. Of course, the names of
+channel access process variables <EM>are</EM> case sensitive and 
+must be specified correctly.
+
+
+<H2><A NAME="Routines">List of Routines by Functional Group</A></H2>
+
+ezcaIDL consists of the following routines, grouped by functionality:
+<UL>
+<LI>Routines which return information about process variables
+<PRE>
+    Status = caGet(pvname, value, /string, max=max)
+    Status = caGetControlLimits(pvname, low, high)
+    Status = caGetGraphicLimits(pvname, low, high)
+    Status = caGetPrecision(pvname, precision)
+    Status = caGetStatus(pvname, timestamp, status, severity)
+    Status = caGetUnits(pvname, units)
+    Status = caGetEnumStrings(pvname, strings)
+    Status = caGetCountAndType(pvname, count, type)
+</PRE>
+
+<LI>Routines which write new values to process variables
+<PRE>
+    Status = caPut(pvname, value)
+</PRE>
+
+<LI>Routines which control channel access timeouts
+<PRE>
+    Timeout = caGetTimeout()
+    caSetTimeout, timeout
+    RetryCount = caGetRetryCount()
+    caSetRetryCount, retrycount
+</PRE>
+
+<LI>Routines which control synchronous groups
+<PRE>
+    caStartGroup
+    stat = caEndGroup(status)
+</PRE>
+
+<LI>Routines which control channel access monitors
+<PRE>
+    Status = caSetMonitor(pvname)
+    Status = caClearMonitor(pvname)
+    State = caCheckMonitor(pvname)
+</PRE>
+
+<LI>Routines which control debugging and error messages
+<PRE>
+    caDebug, state
+    caTrace, state
+    caError, err_string, /ON, /OFF, /PRINT, prefix=prefix
+</PRE>
+</UL>
+
+
+<H2><A NAME="Related">Related Documentation</A></H2>
+
+In addition to this ezcaIDL Users' Guide the following documentation will be
+useful to the IDL programmer using ezcaIDL.
+<UL>
+<LI>
+<A HREF="ezcaIDLRef.html">ezcaIDL Reference Guide</A>
+This document contains a detailed description of all of the ezcaIDL routines. 
+It is extracted directly from the standard documentation headers for each 
+routine in the source file <CODE>ezcaIDL.pro</CODE>.
+<LI>
+<A HREF="http://epics.aps.anl.gov/asd/controls/epics/manuals/EzCaPrimer/EzcaPrimer.html">EZCA Primer</A>
+This document contains an overview of the EZCA C library, which is used by
+ezcaIDL.
+</UL>
+
+
+<H2><A NAME="Synchronous">Synchronous Groups</A></H2>
+
+Normally all ezcaIDL calls, such as <CODE>caGet()</CODE> and 
+<CODE>caPut()</CODE>
+wait for all required 
+channel access operations to complete before they return.  This is often
+convenient, but it is very inefficient if one wants to read/write a large
+number of process variables. In this case it is much more efficient to submit a
+group of channel access requests, and then wait for them all to complete.
+<P>
+ezcaIDL supports the concept of "synchronous groups" in the EZCA library.
+A synchronous group is started by calling
+<PRE>
+    caStartGroup
+</PRE>
+Once a synchronous group is started, subsequent calls to routines like 
+<CODE>caGet()</CODE>, <CODE>caPut()</CODE>, etc. 
+simply queue a channel access operation, and do not actually
+perform the channel access I/O.  Calling
+<PRE>
+    status = caEndGroup()
+</PRE>
+ends a synchronous group.  This causes all of the queued channel access calls
+to be issued and waits for them to complete.
+<P>
+There are two important restrictions which must be kept in mind when calling
+any of the <CODE>caGetxxx()</CODE> routines (e.g. <CODE>caGet()</CODE>, 
+<CODE>caGetUnits()</CODE>,
+<CODE>caGetControlLimits()</CODE>, etc.) from inside a synchronous group, 
+i.e. after calling
+<CODE>caStartGroup</CODE> and before calling <CODE>caEndGroup()</CODE>.
+<P>
+<OL>
+<LI>The IDL variable(s) which contain the return data values 
+must not be "re-used" or
+deleted before the call to <CODE>caEndGroup()</CODE>. 
+The reason for this is that EZCA has
+been passed the addresses of these variables as the locations to which the data
+are to be copied when <CODE>caEndGroup()</CODE> is called. 
+Thus, these locations must still 
+point to a valid memory location when <CODE>caEndGroup()</CODE> is called.  
+<EM>If the output
+variables are re-used then IDL's behavior is unpredictable, and bus
+errors/access violations could occur.</EM> 
+In practice, fatal errors have not been
+observed, but they are possible.
+
+<LI>When using <CODE>caGet()</CODE> to read strings, 
+the data type returned will be a byte
+array, rather than a string.  The reason has to do with the manner in which
+IDL passes strings, which requires that EZCA actually be passed pointers to
+byte arrays. When <CODE>caGet()</CODE> is called outside of 
+a group it automatically
+converts the byte array to a string before returning the value. However when
+<CODE>caGet()</CODE> is called inside of a 
+synchronous group it cannot perform this
+conversion, since it cannot be done until after the data is read, which does
+not occur until <CODE>caEndGroup()</CODE> is called.  
+Thus, it is the user's responsibility
+to convert the data from a byte array to a string after calling 
+<CODE>caEndGroup()</CODE>.
+This is done very simply with the <CODE>string()</CODE> function.
+</OL>
+
+The following is an example of a valid grouped operation. It also shows 
+how to handle strings.
+<PRE>
+caStartGroup
+status = caGet('test_mca1.VAL', mca_value)
+status = caGet('test_vme1.DESC', vme_desc) ; This is a string PV
+status = caEndGroup()
+vme_desc = string(vme_desc)    ; Convert from byte array to string
+</PRE>
+
+The following is an example of an <EM>invalid</EM> grouped operation.
+<PRE>
+caStartGroup
+status = caGet('test_mca1.VAL', mca_value)
+status = caGet('test_vme1.VAL', vme_value)
+mca_value=0
+status = caEndGroup()
+</PRE>
+Note that <CODE>mca_value</CODE> was redefined before calling
+<CODE>caEndGroup()</CODE>, so the previous location became
+undefined. <STRONG>Do not do this!</STRONG>
+
+
+<H2><A NAME="Error">Error Handling</A></H2>
+
+All ezcaIDL routines which can generate errors return a status code to indicate
+success or failure. 0 indicates success, any other value indicates failure.
+These status codes are generally those returned by the routines in ezca.c, 
+although
+some errors are returned directly from routines in <CODE>ezcaIDL.pro</CODE> and 
+<CODE>ezcaIDL.c</CODE>.
+<P>
+The EZCA routines will, by default, print brief diagnostic error messages when
+errors occur.  These messages can be turned off by calling:
+<PRE>
+    caError, /OFF
+</PRE>
+A message describing the most recent error can be printed on stdout by calling:
+<PRE>
+    caError, /PRINT
+</PRE>
+A string describing the most recent error can be returned to the caller with:
+<PRE>
+    caErrror, err_string
+</PRE>
+
+For more information on error messages see the 
+<A HREF="ezcaIDLRef.html#caError">description of 
+caError in the ezcaIDL Reference Guide</A>
+
+
+<H2><A NAME="Debugging">Debugging</A></H2>
+
+Detailed trace information for the EZCA routines can be obtained by calling:
+<PRE>
+    caTrace, 1
+</PRE>
+This can be turned off by calling
+<PRE>
+    caTrace, 0
+</PRE>
+
+Even more detailed debugging information for the EZCA routines can be obtained 
+by calling:
+<PRE>
+    caDebug, 1
+</PRE>
+This can be turned off by calling
+<PRE>
+    caDebug, 0
+</PRE>
+
+
+<H2><A NAME="Differences">
+Summary of differences between ezcaIDL and CaWave</A></H2>
+
+
+ezcaIDL is intended to be a replacement for the existing CaWave library, which
+interfaces to EPICS Channel Access through libLca.  The routines provided in
+ezcaIDL are similar, but not identical, to those provided in CaWave.
+<P>
+There were several motivations for creating this new library for IDL:
+<UL>
+<LI>EZCA is officially supported as the "simple interface" library to Channel
+Access by the EPICS collaboration.  libLca does not have such official
+support.
+
+<LI>The existing CaWave library does not support status return information 
+on all Channel Access calls which could generate errors.
+
+<LI>The existing CaWave library has significant limitations on grouping
+of Channel Access calls which are executed asynchronously before calling
+<CODE>ca_pend_io()</CODE> or <CODE>ca_pend_event()</CODE>.  
+For example, in CaWave <CODE>caget()</CODE> of a list of process variables 
+can only return
+an array of doubles or an array of strings. It is not possible to return 
+other data types, and it is not possible to have an asynchronous get of a 
+process variable which is itself an array.  
+ezcaIDL uses the <CODE>ezcaStartGroup</CODE> and
+<CODE>ezcaEndGroup</CODE> calls to allow any mix of <CODE>caPut</CODE> and
+<CODE>caGet</CODE>
+calls, and for these
+to include any mix of data types, including arrays.
+
+<LI>The existing CaWave library does not permit monitoring of process variables
+which are arrays.
+
+</UL>
+
+There are two new features of CaWave which are not yet part of ezcaIDL.
+<UL>
+<LI>Monitor queues.  These permit CaWave to maintain a FIFO of monitor
+values.  ezcaIDL only maintains the most recent monitor value.  This means that
+intermediate monitor values can be missed, which is undesirable for 
+some applications.
+
+<LI>Monitor "scan" where a monitor on one process variable
+triggers reading of the monitor
+values on a set of related process variables.
+This feature is desirable in some data
+acquisition applications.
+
+</UL>
+These features will be added to ezcaIDL at a future date.
+<P>
+All applications which use CaWave will need to be modified if they are to use
+ezcaIDL instead.  However, the conversion is generally quite simple.
+<P>
+The major differences between ezcaIDL and CaWave include the following:
+<UL>
+<LI>In CaWave a <CODE>caGet()</CODE> on a scalar process 
+variable always returned a
+double or a string.  In ezcaIDL <CODE>caGet()</CODE> returns, 
+by default, a value with
+the native data type of the process variable. 
+<CODE>caGet</CODE> can be forced to 
+return a string value with the <CODE>/STRING</CODE> keyword switch.
+
+<LI>In CaWave <CODE>caGet()</CODE> was a function which returned 
+the value as the function
+return.  In ezcaIDL <CODE>caGet()</CODE> returns a status 
+code as the function return
+value and returns the data value in a parameter.  This change was
+required in order to implement  EZCA synchronous groups.  It is also
+viewed as desirable to return a status value on all operations which can
+generate a channel access error, and to make the syntax of calling 
+<CODE>caGet</CODE>
+and <CODE>caPut</CODE> similar.
+
+<LI>In CaWave one had to explicitly ask for the monitor value in 
+<CODE>caGet()</CODE>.  In
+ezcaIDL <CODE>caGet()</CODE> automatically reads the 
+monitor value for a process 
+variable if <CODE>caSetMonitor()</CODE> has been 
+called for that process variable.
+
+<LI>Many CaWave routines accepted an array of process variable names, for
+example <CODE>caGet()</CODE> and <CODE>caPut()</CODE>.  
+<CODE>caGet</CODE> returned an array of values, while
+<CODE>caPut</CODE> wrote an array of values.  
+This method was quite restrictive, since
+the values were required to be either all scalar doubles or 
+all scalar strings.  
+In ezcaIDL the concept of synchronous groups is much less
+restrictive, since it permits any mix of 
+calls to <CODE>caGet</CODE>, <CODE>caPut</CODE>
+and other
+routines, and there is no restriction on the data types or number of
+elements in the values for these calls.
+
+<LI>In CaWave it was possible to call 
+<CODE>caPendIO</CODE> and <CODE>caPendEvent</CODE>
+directly. This
+is not necessary or possible in ezcaIDL.  The timeouts for channel access
+operations are now set with 
+<CODE>caSetTimeout</CODE> and <CODE>caSetRetryCount</CODE>.
+
+</UL>
+
+<H2><A NAME="Files">Files</A></H2>
+
+ezcaIDL consists of the following files:
+<DL>
+<DT><CODE>ezcaIDL.c</CODE>
+<DD>This file is a thin interface between IDL and EZCA. It converts the
+parameters passed by IDL <CODE>call_external()</CODE> or 
+PV-WAVE <CODE>linknload()</CODE>
+to the form
+required by EZCA.  It directly implements some functions which are not
+provided in the EZCA library.  
+These include <CODE>ezcaIDLGetCountAndType()</CODE>
+and <CODE>ezcaIDLGetEnumStrings()</CODE>.  
+This file is compiled and linked into a shareable
+object file, typically <CODE>ezcaIDL.so</CODE> on Unix and 
+<CODE>ezcaIDL.EXE</CODE> on VMS.
+
+<DT><CODE>ezcaIDL.pro</CODE>
+<DD>This file contains the IDL/PV-WAVE functions and procedures.
+
+<DT><CODE>ezcaWidgets.pro</CODE>
+<DD>This file contains routines which simplify the use of widgets in IDL
+channel access applications. These routines only work with IDL, not with
+PV-WAVE.
+
+<DT><CODE>ezcaIDLGuide.html</CODE>
+<DD>This documentation file.
+
+<DT><A HREF="ezcaIDLRef.html"><CODE>ezcaIDLRef.html</CODE></A>
+<DD>This document contains a detailed description of all of the routines. It is
+extracted directly from the standard documentation headers for each routine
+in <CODE>ezcaIDL.pro</CODE>.
+</DL>
+
+
+<H2><A NAME="Libraries">Required Support Libraries</A></H2>
+
+ezcaIDL requires the following support libraries in order to build the shareable
+object file.  Users who want to port ezcaIDL to another architecture need to
+port these libraries first.
+<PRE>
+    extensions/.../ezca
+    base/.../libca
+    base/.../libCom
+</PRE>
+
+<H2><A NAME="UnixSetup">Unix Setup</A></H2>
+
+The following additions to your <CODE>.login</CODE> file will facilitate 
+the use of ezcaIDL.
+
+<PRE>
+# Define an IDL or PV-WAVE startup file to be executed when IDL or PV-WAVE are
+# started
+setenv IDL_STARTUP ~/idl_startup.pro
+setenv WAVE_STARTUP ~/wave_startup.pro
+#
+# Define the location of ezcaIDL.so or ezcaWave.so so these files can be located
+# no matter what the current default directory is. These need to be modified
+# according to where the .so files are placed on your system.
+setenv ezcaIDL_share /usr/local/epics/extensions/bin/sun4/ezcaIDL.so
+setenv ezcaWave_share /usr/local/epics/extensions/bin/sun4/ezcaWave.so
+</PRE>
+
+In the IDL or PV-WAVE startup files 
+(<CODE>~/idl_startup.pro</CODE> or <CODE>~/wave_startup.pro</CODE> in
+the preceeding example <CODE>.login</CODE> file) add the following lines
+
+<PRE>
+;
+!QUIET=1             ; So things will compile without informational messages
+.RUN ezcaIDL         ; For both IDL and PV-WAVE
+.RUN ezcaIDLWidgets  ; For IDL widget users
+;
+</PRE>
+
+
+<H2><A NAME="VMSSetup">VMS Setup</A></H2>
+
+The following additions to your <CODE>LOGIN.COM</CODE> file will 
+facilitate the use of 
+ezcaIDL.
+
+<PRE>
+$! Define an IDL or PV-WAVE startup file to be executed when IDL or PV-WAVE 
+$! are started
+$ DEFINE IDL_STARTUP SYS$LOGIN:idl_startup.pro
+$ DEFINE WAVE_STARTUP SYS$LOGIN:wave_startup.pro
+$!
+$! Define the location of ezcaIDL.EXE or ezcaWave.EXE so these files can be 
+$! located no matter what the current default directory is. 
+$! These need to be modified according to where the .EXE files are placed on 
+$! your system.
+$ DEFINE ezcaIDL_EXE  PUBLIC_DISK:[PUBLIC.EPICS.EXTENSIONS.BIN]ezcaIDL.EXE
+$ DEFINE ezcaIDL_SHARE ezcaIDL_EXE
+or
+$ DEFINE ezcaWave_EXE  PUBLIC_DISK:[PUBLIC.EPICS.EXTENSIONS.BIN]ezcaWave.EXE
+$ DEFINE ezcaWave_SHARE ezcaWave_EXE
+</PRE>
+
+In the IDL or PV-WAVE startup files 
+(<CODE>idl_startup.pro</CODE> or <CODE>wave_startup.pro</CODE> in
+the preceeding example <CODE>login.com</CODE> file) add the following lines
+<PRE>
+;
+!QUIET=1             ; So things will compile without informational messages
+.RUN ezcaIDL         ; For both IDL and PV-WAVE
+.RUN ezcaIDLWidgets  ; For IDL widget users
+;
+</PRE>
+
+
+<H2><A NAME="Examples">Examples</A></H2>
+
+The following examples illustrate how to use some of the routines in ezcaIDL.
+
+<PRE>
+; Create a sine wave array, write it to a waveform record, read it back again
+; and plot it.
+
+IDL> name = "idl_test:wf1"
+IDL> status = caGetCountAndType(name, n, type)
+IDL> data = sin(dindgen(n) * 2 * !PI / (n-1))
+IDL> status = caPut(name, data)
+IDL> status = caGet(name, readback)
+IDL> plot, readback
+
+
+; Print the list of valid values for the .SCAN field of a record as strings,
+; one per line.
+status = caGetEnumStrings('idl_test:ai1.SCAN', choices)
+for i=0, n_elements(choices)-1 do print, choices(i)
+
+
+; Print out the next 10 values for a process variable which is changing by
+; waiting for monitor events.
+;
+pv = 'mlr_scanner'
+status = caSetMonitor(pv)    ; Add a monitor on this pv
+status = caGet(pv, data)     ; Read the value, which clears the monitor flag
+for i=1, 10 do begin
+   count = 0
+   status = 0
+   while (caCheckMonitor(pv) ne 0) and (count le 100) do begin
+      wait, .01
+      count = count + 1                     ; Assumes new monitors come faster
+      if (count eq 100) then status = -1    ; than 1 per second
+   endwhile
+   if (status ne 0) then begin
+      print, 'Monitor wait failed for ', pv
+   endif else begin
+      status = caGet(pv, data)
+      print, 'New value = ', data
+   endelse
+endfor
+status = caClearMonitor(pv)
+
+
+; The following is an example of a synchronous group operation
+; It also shows how to handle strings in synchronous groups.
+caStartGroup
+status = caGet('test_mca1.VAL', mca_value)
+status = caGet('test_vme1.VAL', vme_value)
+status = caGet('test_vme1.DESC', vme_desc) ; This is a string PV
+status = caEndGroup()
+vme_desc = string(vme_desc)    ; Convert from byte array to string
+</PRE>
+
+
+<H2><A NAME="Widgets">IDL Widgets</A></H2>
+
+The file <CODE>ezcaIDLWidgets.pro</CODE> contains 3 routines which 
+simplify the use of channel
+access, and particularly channel access monitors, with the IDL widget toolkit.
+
+<H3>caWidgetSetMonitor(name, widget_id, time=time)</H3>
+This function first adds a monitor on 
+process variable "name", using routine 
+<CODE>caSetMonitor()</CODE>.
+<P>
+If this is the first time <CODE>caWidgetSetMonitor</CODE> has been called 
+then it creates a
+dummy (iconified) widget which runs a timer routine. The timer routine
+periodically calls <CODE>caCheckMonitor(name)</CODE> to determine whether a
+channel access monitor has arrived for "name". 
+If a monitor has occurred then an
+event will be sent to the widget whose ID is specified by "widget_id". 
+<P>
+The event structure is as follows:
+<PRE>
+    event = 
+      { id         ; The widget ID which was passed to caWidgetSetMonitor
+        top:       ; The top level widget in this hierarchy
+        handler:   ; The widget handler routine
+        name:      ; The name of the process variable for which a monitor has
+                   ; occurred.
+      }
+</PRE>
+When the event is sent, 
+the event handler routine for the specified widget will
+be called. Generally this routine look at the <CODE>event.id</CODE> 
+field to determine that
+this is a monitor event (rather than a mouse event).  If the same event handler
+can receive monitor events from more than one process variable, (because
+<CODE>caWidgetSetMonitor</CODE> was called for several process variables) 
+the event handler
+will then look at the <CODE>event.name</CODE> field to determine which 
+process variable generated the monitor event.
+<P>
+Typically the widget_id which is passed to <CODE>caWidgetSetMonitor</CODE>
+should be the id
+of a base widget. Base widgets cannot generate events due to
+mouse clicks, etc. so the widget event handler routine can distinguish monitor
+events from mouse events by looking at the <CODE>widget.id</CODE> field. 
+This is the same
+concept which is described in the IDL documentation for timer events, e.g.
+<PRE>
+    widget_control, wid, timer=1.0
+</PRE>
+
+<CODE>caWidgetSetMonitor</CODE> can be called for many 
+different process variable names and
+widget_ids. The widgets do not need to belong to the same widget hierarchy.
+Multiple widgets can monitor the same process variable, and the same widget can
+be used to monitor several process variables.  Internally 
+<CODE>caWidgetSetMonitor</CODE>
+maintains a list of all monitored process variables, and which widget_id(s) are
+to receive events from each process variable.
+<P>
+The "time" keyword to <CODE>caWidgetSetMonitor</CODE> can be 
+used to control the time
+interval between polling cycles. The default is 0.1 seconds.
+<P>
+This routine sounds complex, but in fact it is simple to use and greatly
+simplifies the use of channel access monitors with IDL widget, since without it
+each widget event routine would have to poll to detect the arrival of channel
+access monitors. The following is a simple example of the use of this routine:
+
+<PRE>
+pro example_event, event
+    common example_common, pv_name, widget_ids
+    ; This is the event handler routine, called whenever any type of event
+    ; (monitor, mouse, timer) occurs.
+   case event.id of
+        widget_ids.monitor: begin
+            ; Read the new value and display it
+            status = caGet(event.name, value, /string)
+            widget_control, widget_ids.value, set_value=value
+        end
+
+        widget_ids.exit: begin
+            t=CaWidgetClearMonitor(pv_name, widget_ids.monitor)
+            widget_control, event.top, /destroy
+       	end
+   endcase
+end
+
+pro example, name
+    common example_common, pv_name, widget_ids
+    ; This is the main routine for the example. 
+    ; It is passed the name of a process variable to monitor.
+    ; It creates a simple screen with a value field for the monitored process 
+    ; variable and an EXIT button
+    widget_ids= { $
+            monitor:    0L, $
+            value:      0L, $
+            exit:       0L }
+    base=widget_base(title="Example", /column)  ; The base widget
+    widget_ids.monitor=base                     ; The monitor widget id=base
+    widget_ids.value=widget_text(base, xsize=20) ; Widget to display new value
+    widget_ids.exit=widget_button(base, value="Exit")  ; Exit button
+    widget_control, base, /realize              ; Display the widgets
+    t=caWidgetSetMonitor(name, widget_ids.monitor); Call caWidgetSetMonitor
+    pv_name = name                              ; Copy name to common
+    xmanager, "example", base                   ; Start the program
+end
+</PRE>
+
+
+<H3>caWidgetClearMonitor(name, widget_id)</H3>
+
+This routine cancels the effect of <CODE>caWidgetSetMonitor</CODE>.  
+If there are no other
+widgets monitoring this process variable then <CODE>caClearMonitor</CODE> 
+is called to
+completely remove the channel access monitor on this name.
+
+<H3>CaWidgetAdjust(name, font=font, min=min, max=max, label=label, group=group)
+</H3>
+
+This is a general purpose routine for adjusting and monitoring a process
+variable. It creates widget which is appropriate for the data type of "name",
+i.e. a mutually exclusive menu for DBF_ENUM, a text entry widget for DBF_STRING
+and an editable slider widget for any numeric data type. This routine can be
+called from the event handler of larger applications when all that needs to be
+done is adjust the value of a process variable.
+<P>
+<CODE>name</CODE> is the name of the process variable to be adjusted.
+<P>
+The <CODE>font</CODE> keyword can be used to specify a font to use.
+<P>
+The <CODE>min</CODE> and <CODE>max</CODE>
+ keywords can be used to specify the upper and lower limits
+of the slider widget when adjusting numeric process variables.
+<P>
+The <CODE>label</CODE> keyword can 
+be used to put a descriptive label at the top of the
+widget.
+<P>
+The <CODE>group</CODE> keyword can be 
+used to set the id of the parent widget. If the 
+widget specified by <CODE>group</CODE> is deleted, 
+then the widget created by 
+<CODE>CaWidgetAdjust</CODE> will also be deleted.
+
+
+</BODY>
+</HTML>

@@ -1,0 +1,8 @@
+Things to do with ezcaIDL
+
+- Make the default limits for caWidgetAdjust be determined by 
+  caGetGraphicLimits()
+
+- Make FIFO for monitor events
+
+- Add Monitor Scan functionality
