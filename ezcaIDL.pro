@@ -1821,6 +1821,7 @@ FUNCTION caSearch, name
 ;
 ; MODIFICATION HISTORY:
 ;       Written by:	Ben-chin Cha      Dec, 1995	
+;      04-11-96   bkc   Fix typo error names to name
 ;-
 on_error,2              ; Return to caller IF an error occurs
         no = n_elements(name)
@@ -1853,7 +1854,7 @@ FUNCTION caError, name, x
         no = n_elements(name)
 ; check for null string first
 for i=0,no-1 do begin
-	if strlen(names(i)) lt 1 then names(i) = ' '
+	if strlen(name(i)) lt 1 then name(i) = ' '
 	end
         x = make_array(no,/long)
         ln = call_ezca('EzcaGetError',fix(no),long(x),string(name))
@@ -2083,6 +2084,8 @@ FUNCTION caGetArray,names,pdata,max_no=max_no,type=type, $
 ;
 ; MODIFICATION HISTORY:
 ;       Written by:	Ben-chin Cha      Dec, 1995	
+;      04-11-96     bkc    If array get failed, only the pvnames not found are 
+;                          reported
 ;-
 num = 1			; default to 1 value 
 wave_type = 5		; default to double
@@ -2152,7 +2155,12 @@ if keyword_set(event) then $
 else $
 	ln = call_ezca('EzcaGetArrayValues',ca_type,long(num),no, $
 		pdata,string(names))
-	IF ln NE 0 THEN print,'Error: caGetArray failed on ',names
+	IF ln NE 0 THEN begin
+		ln = caError(names,p1)
+		for i=0,no-1 do begin
+		if p1(i) ne 0 then print,'Error: caGetArray failed on ',names(i)
+		end
+		end
 	if wave_type eq 7 then pdata=string(pdata)
 	return,ln
 END
@@ -2584,11 +2592,11 @@ PRO caMonitor,help=help
         print,' Examples'
         print,''
         print,"         print,caMonitor('chademoai1',/add)
-        print,"         print,caMonitor('chademoai1',/get)
+        print,"         print,caMonitor('chademoai1',vals,/get)
         print,"         print,caMonitor('chademoai1',/clear)
         print,''
         print,"         print, caMonitor('chademoai1',/add,/queue,maxqueue=100)"
-        print,"         print, caMonitor('chademoai1',/get,/queue,maxqueue=100)"
+        print,"         print, caMonitor('chademoai1',vals,num,overflow,/get,/queue,maxqueue=100)"
         print,"         print, caMonitor('chademoai1',/clear,/queue)"
         print,' '
 END
@@ -2684,17 +2692,18 @@ FUNCTION caMonitor, name, vals, num, overflow, $
 ;    Single value monitor
 ;
 ;       IDL> print,caMonitor('chademoai1',/add)
-;       IDL> print,caMonitor('chademoai1',/get)
+;       IDL> print,caMonitor('chademoai1',vals,/get)
 ;       IDL> print,caMonitor('chademoai1',/clear)
 ;
 ;    Use queue array monitor with maxqueue=100
 ; 
 ;       IDL> print, caMonitor('chademoai1',/add,/queue,maxqueue=100)
-;       IDL> print, caMonitor('chademoai1',/get,/queue,maxqueue=100)
+;       IDL> print, caMonitor('chademoai1',vals,num,overflow,/get,/queue,maxqueue=100)
 ;       IDL> print, caMonitor('chademoai1',/clear,/queue)
 ;
 ; MODIFICATION HISTORY:
 ;       Written by:	Ben-chin Cha      Dec, 1995	
+;       04-12-96    bkc   Modified on line help syntax
 ;-
 on_error,2              ; Return to caller IF an error occurs
         nvals = n_elements(name)
