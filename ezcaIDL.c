@@ -332,7 +332,7 @@ int i;
         return(Ezca_getArray(*s,STR_ARRAY_ADDR(str),*type,*count,d));
 }
 
-WAVE_HEADER4(int, EzcaGetArrayTypeCount, int, s, int, type, int, count, char, str)
+WAVE_HEADER4(int, EzcaGetArrayTypeCount, short, s, int, type, int, count, char, str)
 int i;
         BUILD_STR_ARRAY(*s, str);
         return(Ezca_getTypeCount(*s,STR_ARRAY_ADDR(str),type,count));

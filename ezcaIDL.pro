@@ -2252,7 +2252,6 @@ FUNCTION caGetArray,names,pdata,max_no=max_no,type=type, $
 
     nms = ezcaStringToByte(names, no)
     if (no eq 1) then begin
-;       st = caGetCountAndType(names, ct, ty)
         st = caGetTypeCount(names, ty, ct, wty)
         if st eq -1 then begin
             return,-1
