@@ -18,6 +18,10 @@ include $(TOP)/config/RULES_ARCHS
 else
 include $(TOP)/configure/CONFIG
 
+HTMLS = ezcaIDLGuide.html ezcaIDLRef.html
+
+SCRIPTS_HOST = ezcaIDL.pro ezcaIDLWidgets.pro
+
 LOADABLE_LIBRARY_HOST = ezcaIDL
 ezcaIDL_SRCS = ezcaIDL.c
 ezcaIDL_LIBS += ezca EzcaScan ca Com
