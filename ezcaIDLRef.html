@@ -14,7 +14,7 @@ this routine, refer to the IDL Online Help Navigator
 or type: <P>
 <PRE>     ? mk_html_help</PRE><P>
 at the IDL command line prompt.<P>
-<STRONG>Last modified: </STRONG>Fri Apr 19 13:55:32 1996.<P>
+<STRONG>Last modified: </STRONG>Thu Sep 27 11:55:08 2001.<P>
  
 <HR>
  
@@ -56,6 +56,8 @@ at the IDL command line prompt.<P>
 <LI><A HREF="#CAWIDGETADJUST">CAWIDGETADJUST</A>
 <LI><A HREF="#CAWIDGETCLEARMONITOR">CAWIDGETCLEARMONITOR</A>
 <LI><A HREF="#CAWIDGETSETMONITOR">CAWIDGETSETMONITOR</A>
+<LI><A HREF="#EZCASTRINGTOBYTE">EZCASTRINGTOBYTE</A>
+<LI><A HREF="#RELEASE NOTES">RELEASE NOTES</A>
 </UL><P>
  
 <HR>
@@ -67,38 +69,38 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caCheckMonitor
+       caCheckMonitor
 
  PURPOSE:
-	This function returns a non-zero value if there is a new (unread)
+       This function returns a non-zero value if there is a new (unread)
        monitor for this process variable, otherwise it returns zero.
        This function is particularly useful when a caGet() operation is
        expensive in time, e.g. reading large arrays.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	state = caCheckMonitor(pvname)
+       state = caCheckMonitor(pvname)
 
  INPUTS:
-	pvname: The name of the process variable on which to check the monitor.
+       pvname: The name of the process variable on which to check the monitor.
 
  OUTPUTS:
        The function return value is zero if no new monitor value is available,
        and non-zero if a new monitor value is available.
 
  PROCEDURE:
-	This routine uses ezcaNewMonitorValue(). The "type" parameter required
-       by ezcaNewMonitorValue() is the native EZCA data type as determined 
+       This routine uses ezcaNewMonitorValue(). The "type" parameter required
+       by ezcaNewMonitorValue() is the native EZCA data type as determined
        by caGetCountAndType().
 
  EXAMPLES:
        IDL> state = caCheckMonitor('test_ao1',event)
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -110,37 +112,37 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caClearMonitor
+       caClearMonitor
 
  PURPOSE:
-	This procedure clears a monitor on the specified process variable.
+       This procedure clears a monitor on the specified process variable.
        It cancels the effect of caSetMonitor().
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	status = caClearMonitor(pvname)
+       status = caClearMonitor(pvname)
 
  INPUTS:
-	pvname: The name of the process variable on which to clear the monitor.
+       pvname: The name of the process variable on which to clear the monitor.
 
  OUTPUTS:
        The function return value of caClearMonitor is a status value.  The
-       status is 0 if the routine was successful (i.e. the process variable 
+       status is 0 if the routine was successful (i.e. the process variable
        exists) and non-zero if the routine failed.
 
  PROCEDURE:
-	This routine uses ezcaClearMonitor(). The "type" parameter required
-       by ezcaClearMonitor is the native EZCA data type as determined 
+       This routine uses ezcaClearMonitor(). The "type" parameter required
+       by ezcaClearMonitor is the native EZCA data type as determined
        by caGetCountAndType().
 
  EXAMPLES:
        IDL> status = caClearMonitor('test_ao1')
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -152,27 +154,27 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caDebug
+       caDebug
 
  PURPOSE:
-	This procedure turns the EZCA debugging flag on or off. Turning on
+       This procedure turns the EZCA debugging flag on or off. Turning on
        the debugging flag prints lots of information, which is mainly
        useful to developers.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	caDebug, state
+       caDebug, state
 
  INPUTS:
-	state:  state=1 turns debugging on, state=0 turns debugging off.
+       state:  state=1 turns debugging on, state=0 turns debugging off.
 
  OUTPUTS:
        None
 
  PROCEDURE:
-	This routine uses ezcaDebugOn() and ezcaDebugOff().
+       This routine uses ezcaDebugOn() and ezcaDebugOff().
 
  EXAMPLES:
        IDL> caDebug, 1     ; Turn on debugging
@@ -190,8 +192,8 @@ at the IDL command line prompt.<P>
        IDL> caDebug, 0 ; Turn off debugging
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -203,27 +205,27 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caEndGroup
+       caEndGroup
 
  PURPOSE:
-	This function ends an "asynchronous group". See caStartGroup for more
+       This function ends an "asynchronous group". See caStartGroup for more
        information on asynchronous groups.
        caEndGroup flushes the queue of caGet and caPut calls and waits for
        replies from the channel access servers.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	stat = caEndGroup(status)
+       stat = caEndGroup(status)
 
  INPUTS:
-	None.
+       None.
 
  OUTPUTS:
        The function return value is 0 if the operation was successful,
        otherwise it is the first encountered non-successful return code.
-       The optional status parameter can be used to return the status code 
+       The optional status parameter can be used to return the status code
        of each operation in the group.
 
  OPTIONAL OUTPUT PARAMETERS:
@@ -236,7 +238,7 @@ at the IDL command line prompt.<P>
        are currently in an asynchronous group. This routine clears that flag.
 
  PROCEDURE:
-	If the status parameter is present then this routine uses
+       If the status parameter is present then this routine uses
        ezcaEndGroupWithReport().  If the parameter is not present then
        the routine calls ezcaEndGroup().
 
@@ -247,7 +249,7 @@ at the IDL command line prompt.<P>
        elements, and then truncates it to the actual length.  The maximum
        number of status values which can be retrieved is thus 1024. No errors
        will occur if an asynchronous group has more than 1024 calls, but
-       only the first 1024 status values can be obtained. 
+       only the first 1024 status values can be obtained.
        This is probably sufficient for most applications!
 
  EXAMPLES:
@@ -266,8 +268,8 @@ at the IDL command line prompt.<P>
            ERTM            FLOAT     =       7.10000
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -279,16 +281,16 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caError
+       caError
 
  PURPOSE:
-	This procedure controls error printing and returns error strings.
+       This procedure controls error printing and returns error strings.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	caError, err_string, /ON, /OFF, /PRINT, prefix=prefix
+       caError, err_string, /ON, /OFF, /PRINT, prefix=prefix
 
  INPUTS:
        None
@@ -311,7 +313,7 @@ at the IDL command line prompt.<P>
            output parameter.
 
  OPTIONAL OUTPUT PARAMETERS:
-	err_string:
+       err_string:
            If this parameter is present then it will contain the text of the
            last error message.
 
@@ -320,18 +322,18 @@ at the IDL command line prompt.<P>
        are currently in an asynchronous group. This routine tests that flag.
 
  PROCEDURE:
-	This routine uses ezcaPerror(), ezcaAutoErrorMessageOn(), 
+       This routine uses ezcaPerror(), ezcaAutoErrorMessageOn(),
        ezcaAutoErrorMessageOff(), and ezcaGetErrorString()
 
  EXAMPLE:
        IDL> ; Define a prefix and turn on error messages
-       IDL> caError, prefix='My program', /ON  
+       IDL> caError, prefix='My program', /ON
        IDL> ; Fetch the last error message
        IDL> caError, err_string
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -343,35 +345,35 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caGet
+       caGet
 
  PURPOSE:
-	This function reads the value of a Channel Access process variable.
+       This function reads the value of a Channel Access process variable.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	Status = caGet(pvname, value, /string, max=n)
+       Status = caGet(pvname, value, /string, max=n)
 
  INPUTS:
-	pvname:	The name of the process variable for which the value is to
+       pvname: The name of the process variable for which the value is to
                be returned.
 
  KEYWORD PARAMETERS:
-	STRING:	Set this flag to force caGet to return a string, rather than
+       STRING: Set this flag to force caGet to return a string, rather than
                a number.  This flag is particularly useful when the native
                channel access data type is ENUM (3), since the string is
                more descriptive than the number.
 
-	MAX:    This keyword parameter is used to limit the number of
+       MAX_ELEMENTS: This keyword parameter is used to limit the number of
                values returned by caGet. caGet normally returns the native
                element count for a process variable. Setting MAX to a
                number less than this will cause caGet to return only the
                first MAX values in the array.
 
  OUTPUTS:
-	value:  The value of the process variable. By default, caGet returns
+       value:  The value of the process variable. By default, caGet returns
                "value" with the native data type and number of elements
                of the process variable. It determines this information by
                calling caGetCountAndType().  Note that if caGet is called
@@ -380,7 +382,7 @@ at the IDL command line prompt.<P>
                contain the data until caEndGroup is called.
 
        The function return value of caGet is a status value.  The
-       status is 0 if the routine was successful (i.e. the process variable 
+       status is 0 if the routine was successful (i.e. the process variable
        exists) and non-zero if the routine failed.  If caGet is called from
        within an asynchronous group then the status return only indicates
        whether the operation was successfully queued.
@@ -390,38 +392,38 @@ at the IDL command line prompt.<P>
        are currently in an asynchronous group. This routine tests that flag.
 
  SIDE EFFECTS:
-	This routine will causes a channel access search to take place if 
+       This routine will causes a channel access search to take place if
        this is the first time this process variable has been referenced. It
        performs a ca_get, unless called as part of an asynchronous group.
 
  RESTRICTIONS:
        There are two important restrictions which must be kept in mind when
-       calling caGet from inside a "group", i.e. after calling caStartGroup 
+       calling caGet from inside a "group", i.e. after calling caStartGroup
        and before calling caEndGroup.
 
        1) The IDL "value" variable (i.e. the second parameter
        passed to caGet) must not be "re-used" or deleted before the call to
-       caEndGroup. The reason for this is that EZCA has been passed the 
-       address of this variable as the location in which the data is to be 
-       copied when caEndGroup is called. Thus, this location must still 
-       point to a valid memory location when caEndGroup is called.  
-       If the "value" variable is re-used then IDL's behavior is 
+       caEndGroup. The reason for this is that EZCA has been passed the
+       address of this variable as the location in which the data is to be
+       copied when caEndGroup is called. Thus, this location must still
+       point to a valid memory location when caEndGroup is called.
+       If the "value" variable is re-used then IDL's behavior is
        unpredictable, and bus errors/access violations could occur.
 
        2) When using caGet to read strings, the data type returned will be
-       a byte array, rather than a string.  The reason has to do with the 
+       a byte array, rather than a string.  The reason has to do with the
        manner in which IDL passes strings, which requires that EZCA actually
        be passed pointers to byte arrays. When caGet is called outside of a
        group it automatically converts the byte array to a string before
-       returning the value. However when caGet is called inside of a group 
-       it cannot perform this conversion, since it cannot be done until after 
-       the data is read, which does not occur until caEndGroup is called. 
-       Thus, it is the user's responsibility to convert the data from a byte 
-       array to a string after calling caEndGroup. This is done very simply 
+       returning the value. However when caGet is called inside of a group
+       it cannot perform this conversion, since it cannot be done until after
+       the data is read, which does not occur until caEndGroup is called.
+       Thus, it is the user's responsibility to convert the data from a byte
+       array to a string after calling caEndGroup. This is done very simply
        with the string() function. For more information see the example below.
 
  PROCEDURE:
-	This routine uses ezcaGet().
+       This routine uses ezcaGet().
 
  EXAMPLES:
        IDL> ; The following is an example of a single caGet
@@ -445,8 +447,8 @@ at the IDL command line prompt.<P>
        IDL> status = caEndGroup()
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -461,7 +463,7 @@ at the IDL command line prompt.<P>
        caGetArray
 
  PURPOSE:
-       This function reads values for a list of Channel Access process 
+       This function reads values for a list of Channel Access process
        variable. It returns 0 if successful, returns -1 if failed.
 
  CATEGORY:
@@ -471,7 +473,7 @@ at the IDL command line prompt.<P>
        Status = caGetArray(names,pdata,max=no,type=i,/TYPE,/EVENT)
 
  INPUTS:
-       names:	The variable for a list of channel access PV names for which 
+       names:  The variable for a list of channel access PV names for which
                the array of data is to be returned.
 
  KEYWORD PARAMETERS:
@@ -480,21 +482,21 @@ at the IDL command line prompt.<P>
               must be specified. If the `no' specified is greater than the
               native count, zeros will be padded in the output array.
 
-              If only one PV name is input, then caGetArray returns 
-              the native element count for the process variable. Setting 
-              MAX to a number less than the native count this will cause 
+              If only one PV name is input, then caGetArray returns
+              the native element count for the process variable. Setting
+              MAX to a number less than the native count this will cause
               caGetArray to return only the first MAX values for the PV.
 
-      TYPE:   This keyword specifies the IDL data type to be returned by 
-              the output array. If not specified, it defaults to 5, i.e. 
-              double precision type of data will be returned by the 
+      TYPE:   This keyword specifies the IDL data type to be returned by
+              the output array. If not specified, it defaults to 5, i.e.
+              double precision type of data will be returned by the
               output array.
 
                 1 - byte      2 - short       3 - long      4 - float
                 5 - double    7 - string
 
      /TYPE    Instead of type=i a user can use the IDL data type keyword
-              directly, the data type keyword supercedes the type=i 
+              directly, the data type keyword supercedes the type=i
               specification. Valid types given below
 
                             /double
@@ -508,7 +510,7 @@ at the IDL command line prompt.<P>
               the ca_array_get
 
  OUTPUTS:
-     pdata:  The output variable,  pdata(max,noNames), returns the data 
+     pdata:  The output variable,  pdata(max,noNames), returns the data
              array for the requested list of PV names. The `max' is the no
              of values specified by the keyword MAX, the `noNames' is the
              number of PV names in the input variable names.
@@ -517,19 +519,19 @@ at the IDL command line prompt.<P>
        None.
 
  SIDE EFFECTS:
-       This routine will causes a channel access search to take place if 
+       This routine will causes a channel access search to take place if
        this is the first time this process variable has been referenced.
 
  RESTRICTIONS:
-       Only one type of data can be requested for a list of PV names. 
+       Only one type of data can be requested for a list of PV names.
 
  PROCEDURE:
-	This routine uses Ezca_getArray() from the Ezca library.
+       This routine uses Ezca_getArray() from the EzcaScan library.
 
  EXAMPLES:
-       Three examples are given below. 
-       The first caGetArray call returns only the first value for each PV 
-       name, the second and third caGetArray call both returns 10 float 
+       Three examples are given below.
+       The first caGetArray call returns only the first value for each PV
+       name, the second and third caGetArray call both returns 10 float
        values for each PV name
 
        IDL> names=['chademowf7','chademowf8']
@@ -538,9 +540,10 @@ at the IDL command line prompt.<P>
        IDL> st = caGetArray(names,pdata,max=10,type=4)
 
  MODIFICATION HISTORY:
-       Written by:	Ben-chin Cha      Dec, 1995	
-      04-11-96     bkc    If array get failed, only the pvnames not found are 
+       Written by:     Ben-chin Cha      Dec, 1995
+      04-11-96     bkc    If array get failed, only the pvnames not found are
                           reported
+      04-22-96     bkc    Replace caError by caGetError
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -552,20 +555,20 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caGetControlLimits
+       caGetControlLimits
 
  PURPOSE:
-	This procedure reads the control limits for the specified channel
+       This procedure reads the control limits for the specified channel
        access process variable.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	status = caGetControlLimits(pvname, low, high)
+       status = caGetControlLimits(pvname, low, high)
 
  INPUTS:
-	pvname: The name of the process variable from which to read the 
+       pvname: The name of the process variable from which to read the
                control limits.
 
  OUTPUTS:
@@ -574,18 +577,18 @@ at the IDL command line prompt.<P>
        high:   The high control limit (double).
 
        The function return value of caGetControlLimits is a status value.  The
-       status is 0 if the routine was successful (i.e. the process variable 
+       status is 0 if the routine was successful (i.e. the process variable
        exists) and non-zero if the routine failed.
 
  PROCEDURE:
-	This routine uses ezcaGetControlLimits(). 
+       This routine uses ezcaGetControlLimits().
 
  EXAMPLE:
        IDL> status = caGetControlLimits('test_ao1', low, high)
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -597,24 +600,24 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caGetCountAndType
+       caGetCountAndType
 
  PURPOSE:
-	This function returns the number of elements and data type of a 
+       This function returns the number of elements and data type of a
        Channel Access process variable.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	Status = caGetCountAndType(pvname, count, type)
+       Status = caGetCountAndType(pvname, count, type)
 
  INPUTS:
-	pvname:	The name of the process variable for which information is to
+       pvname: The name of the process variable for which information is to
                be returned.
 
  OUTPUTS:
-	count:  The number of elements in the process variable. This is 1 for
+       count:  The number of elements in the process variable. This is 1 for
                scalar process variables and more than 1 for arrays.
 
        type:   This is a 3 element array containing information about the data
@@ -638,22 +641,22 @@ at the IDL command line prompt.<P>
    and non-zero if the routine failed.
 
  SIDE EFFECTS:
-	This routine will cause a Channel Access search to take place if this is
+       This routine will cause a Channel Access search to take place if this is
        the first time this process variable has been referenced.
 
  RESTRICTIONS:
        The channel access data type enum is mapped to EZCA and IDL short
-       data types.  However, application programs can use this routine to 
+       data types.  However, application programs can use this routine to
        determine if the native channel access data type is enum, and then
-       use caGet(pvname, value, /string) to read the string equivalent of the 
-       process variable. Programs can also use 
+       use caGet(pvname, value, /string) to read the string equivalent of the
+       process variable. Programs can also use
        caGetEnumStrings(pvname, strings) to read the strings for the all of
        the possible values of an enum process variable.
 
  PROCEDURE:
-	This routine uses ezcaPvToChid() and then ca_element_count() and
+       This routine uses ezcaPvToChid() and then ca_element_count() and
        ca_field_type().
-       Note that this routine always returns its values "immediately", even 
+       Note that this routine always returns its values "immediately", even
        if it is called between a caStartGroup and caEndGroup.
 
  EXAMPLE:
@@ -665,8 +668,8 @@ at the IDL command line prompt.<P>
        IDL> print, type
            5       3       3   ; Long data type
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -678,44 +681,44 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caGetEnumStrings
+       caGetEnumStrings
 
  PURPOSE:
-	This function returns all of the choice strings associated with a 
+       This function returns all of the choice strings associated with a
        Channel Access "enum" process variable. It is particularly useful
        for building menus of options.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	Status = caGetEnumStrings(pvname, strings)
+       Status = caGetEnumStrings(pvname, strings)
 
  INPUTS:
-	pvname:	The name of the process variable for which the enum strings
+       pvname: The name of the process variable for which the enum strings
                are to be returned. The native channel access data type of
                this process variable must be enum (3).
 
  OUTPUTS:
-	strings: A string array containing the strings for each possible
+       strings: A string array containing the strings for each possible
                value of the enum variable.
 
        The function return value of caGetEnumStrings is a status value.  The
-       status is 0 if the routine was successful (i.e. the process variable 
+       status is 0 if the routine was successful (i.e. the process variable
        exists and is of type enum) and non-zero if the routine failed.
 
  SIDE EFFECTS:
-	This routine causes a channel access read. It does not use the 
+       This routine causes a channel access read. It does not use the
        grouping mechanism of EZCA, i.e. it always executes immediately.
 
  RESTRICTIONS:
-       There must be less than 16 enum strings and they must each be less
-       than 26 characters.
+       There must be less than MAX_ENUM_STATES enum strings and they must each be
+       less than MAX_STRING_SIZE characters.
 
  PROCEDURE:
-	This routine uses ezcaPvToChid and then ca_get() with a request type
+       This routine uses ezcaPvToChid and then ca_get() with a request type
        of DBR_GR_ENUM.  The functionality required by this routine is not
-       presently provided directly in EZCA, although it should probably be 
+       presently provided directly in EZCA, although it should probably be
        added.
 
  EXAMPLES:
@@ -733,8 +736,8 @@ at the IDL command line prompt.<P>
        .1 second
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -746,7 +749,7 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caGetError
+       caGetError
 
  PURPOSE:
        This function get CA return codes for a list of process variable names.
@@ -759,7 +762,7 @@ at the IDL command line prompt.<P>
        Status = caGetError(Pvname,Err)
 
  INPUTS:
-      Pvname: The variable for a list of process variables for which the 
+      Pvname: The variable for a list of process variables for which the
               channel access return code to be checked.
 
  KEYWORD PARAMETERS:
@@ -767,20 +770,20 @@ at the IDL command line prompt.<P>
 
  OUTPUTS:
        Err:  The corresponding return code(s) for the Pvname(s) are returned.
-             Returns array of 0 or 1. 0 indicates success, 1 indicates failed. 
+             Returns array of 0 or 1. 0 indicates success, 1 indicates failed.
 
  COMMON BLOCKS:
        None.
 
  SIDE EFFECTS:
-       This routine will causes a channel access search to take place if 
+       This routine will causes a channel access search to take place if
        this is the first time pvnames has been referenced.
 
  RESTRICTIONS:
        None.
 
  PROCEDURE:
-       This routine uses Ezca_get_error_array() from the Ezca library.
+       This routine uses Ezca_get_error_array() from the EzcaScan library.
 
  EXAMPLES:
        IDL> print,caGetError('chademoai1')
@@ -788,7 +791,7 @@ at the IDL command line prompt.<P>
        IDL> status = caGetError(x)
 
  MODIFICATION HISTORY:
-       Written by:	Ben-chin Cha      Dec, 1995	
+       Written by:     Ben-chin Cha      Dec, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -800,20 +803,20 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caGetGraphicLimits
+       caGetGraphicLimits
 
  PURPOSE:
-	This procedure reads the graphic limits for the specified channel
+       This procedure reads the graphic limits for the specified channel
        access process variable.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	status = caGetGraphicLimits(pvname, low, high)
+       status = caGetGraphicLimits(pvname, low, high)
 
  INPUTS:
-	pvname: The name of the process variable from which to read the 
+       pvname: The name of the process variable from which to read the
                graphic limits.
 
  OUTPUTS:
@@ -822,18 +825,18 @@ at the IDL command line prompt.<P>
        high:   The high graphic limit (double).
 
        The function return value of caGetGraphicLimits is a status value.  The
-       status is 0 if the routine was successful (i.e. the process variable 
+       status is 0 if the routine was successful (i.e. the process variable
        exists) and non-zero if the routine failed.
 
  PROCEDURE:
-	This routine uses ezcaGetGraphicLimits(). 
+       This routine uses ezcaGetGraphicLimits().
 
  EXAMPLE:
        IDL> status = caGetGraphicLimits('test_ao1', low, high)
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -845,38 +848,38 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caGetPrecision
+       caGetPrecision
 
  PURPOSE:
-	This procedure reads the precision for the specified channel
+       This procedure reads the precision for the specified channel
        access process variable.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	status = caGetPrecision(pvname, precision)
+       status = caGetPrecision(pvname, precision)
 
  INPUTS:
-	pvname: The name of the process variable from which to read the 
+       pvname: The name of the process variable from which to read the
                precision.
 
  OUTPUTS:
        precision:  The precision (short).
 
        The function return value of caGetPrecision is a status value.  The
-       status is 0 if the routine was successful (i.e. the process variable 
+       status is 0 if the routine was successful (i.e. the process variable
        exists) and non-zero if the routine failed.
 
  PROCEDURE:
-	This routine uses ezcaGetPrecision(). 
+       This routine uses ezcaGetPrecision().
 
  EXAMPLE:
        IDL> status = caGetPrecision('test_ao1', precision)
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -888,36 +891,36 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caGetRetryCount
+       caGetRetryCount
 
  PURPOSE:
-	This function returns the value of the EZCA retry count parameter.
+       This function returns the value of the EZCA retry count parameter.
        In conjunction with the EZCA Timeout parameter it determines how
        long EZCA will try to connect to a process variable before giving up.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	RetryCount = caGetRetryCount()
+       RetryCount = caGetRetryCount()
 
  INPUTS:
-	None.
+       None.
 
  OUTPUTS:
        The function return value of caGetRetryCount is the integer
        value of the EZCA RetryCount parameter.
 
  PROCEDURE:
-	This routine uses ezcaGetRetryCount().
+       This routine uses ezcaGetRetryCount().
 
  EXAMPLES:
        IDL> print, caGetRetryCount()
        599
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -929,20 +932,20 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caGetStatus
+       caGetStatus
 
  PURPOSE:
-	This procedure reads the status parameters for a channel access 
+       This procedure reads the status parameters for a channel access
        process variable.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	status = caGetStatus(pvname, timestamp, status, severity)
+       status = caGetStatus(pvname, timestamp, status, severity)
 
  INPUTS:
-	pvname: The name of the process variable from which to read the 
+       pvname: The name of the process variable from which to read the
                status parameters.
 
  OUTPUTS:
@@ -954,18 +957,18 @@ at the IDL command line prompt.<P>
        severity: The severity flag (int).
 
        The function return value of caGetStatus is a status value.  The
-       status is 0 if the routine was successful (i.e. the process variable 
+       status is 0 if the routine was successful (i.e. the process variable
        exists) and non-zero if the routine failed.
 
  PROCEDURE:
-	This routine uses ezcaGetStatus(). 
+       This routine uses ezcaGetStatus().
 
  EXAMPLE:
        IDL> status = caGetStatus('test_ao1', timestamp, status, severity)
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -977,37 +980,37 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caGetTimeout
+       caGetTimeout
 
  PURPOSE:
-	This function returns the value of the EZCA Timeout parameter. This
+       This function returns the value of the EZCA Timeout parameter. This
        value determines the time parameter passed to ca_pend_io() in EZCA.
        In conjunction with the EZCA RetryCount parameter it determines how
        long EZCA will try to connect to a process variable before giving up.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	timeout = caGetTimeout()
+       timeout = caGetTimeout()
 
  INPUTS:
-	None.
+       None.
 
  OUTPUTS:
        The function return value of caGetTimeout is the floating point
        value of the EZCA Timeout parameter, in seconds.
 
  PROCEDURE:
-	This routine uses ezcaGetTimeout().
+       This routine uses ezcaGetTimeout().
 
  EXAMPLES:
        IDL> print, caGetTimeout()
        0.0500000
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1019,26 +1022,26 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caGetUnits
+       caGetUnits
 
  PURPOSE:
-	This procedure reads the units string for the specified channel
+       This procedure reads the units string for the specified channel
        access process variable.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	status = caGetUnits(pvname, units)
+       status = caGetUnits(pvname, units)
 
  INPUTS:
-	pvname: The name of the process variable from which to read the units.
+       pvname: The name of the process variable from which to read the units.
 
  OUTPUTS:
        units:  The units (string).
 
        The function return value of caGetUnits is a status value.  The
-       status is 0 if the routine was successful (i.e. the process variable 
+       status is 0 if the routine was successful (i.e. the process variable
        exists) and non-zero if the routine failed.
 
  COMMON BLOCKS:
@@ -1046,14 +1049,14 @@ at the IDL command line prompt.<P>
        are currently in an asynchronous group. This routine tests that flag.
 
  PROCEDURE:
-	This routine uses ezcaGetUnits(). 
+       This routine uses ezcaGetUnits().
 
  EXAMPLE:
        IDL> status = caGetUnits('test_ao1', units)
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1065,20 +1068,22 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caInit
+       caInit
 
  PURPOSE:
-	This routine sets the channel access timeout used by list array 
-       functions defined in Ezca library.
+       This routine sets the channel access timeout used by list array
+       functions defined in EzcaScan library.  It also sets the values of two
+       constants, MAX_STRING_SIZE and MAX_ENUM_STATES used in other functions.
+       This routine MUST be called before any other routines in this file.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	caInit [,flag] [,help=help]
+       caInit [,flag] [,help=help]
 
  INPUTS:
-	flag:	Optional flag, if set to -1  Ezca library default timeout
+       flag:   Optional flag, if set to -1  EzcaScan library default timeout
                settings will be used.
 
  KEYWORD PARAMETERS:
@@ -1088,14 +1093,14 @@ at the IDL command line prompt.<P>
        None.
 
  COMMON BLOCKS:
-       None.
+       ezca_common is used to hold the values of MAX_STRING_SIZE and MAX_ENUM_STATES
 
  SIDE EFFECTS:
-       This routine set the channel access timeout values used in the 
-       Ezca library.  This routine set the timeout to 3 seconds for 
-       lists of process variables, and sets the timeout for 
-       ca_pend_event to 0.001 second. 
- 
+       This routine set the channel access timeout values used in the
+       EzcaScan library.  This routine sets the timeout to 3 seconds for
+       lists of process variables, and sets the timeout for
+       ca_pend_event to 0.001 second.
+
        If a value of -1 is specified for the flag, the default value
        of 10 seconds for lists of process variables will be used.
 
@@ -1103,13 +1108,15 @@ at the IDL command line prompt.<P>
        None.
 
  PROCEDURE:
-	This routine uses Ezca_init() from the Ezca library.
+       This routine uses Ezca_init() from the EzcaScan library.
 
  EXAMPLES:
        IDL> caInit
 
  MODIFICATION HISTORY:
- 	Written by:	Ben-chin Cha     Dec, 1995
+       Written by:     Ben-chin Cha     Dec, 1995
+       27-Sep-2001   MLR   Added initializtion of contants MAX_STRING_SIZE and
+                           MAX_ENUM_STATES.
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1124,7 +1131,7 @@ at the IDL command line prompt.<P>
        caMonitor
 
  PURPOSE:
-       This function provides Add/Get/Check/Clear monitor features on a 
+       This function provides Add/Get/Check/Clear monitor features on a
        single PV or a list of PV names.
 
  CATEGORY:
@@ -1134,13 +1141,13 @@ at the IDL command line prompt.<P>
        Status = caMonitor(name, vals, num, overflow, op_keyword,type_keyword, max=no)
 
  INPUTS:
-       name:	The variable for a PV or a list of PV names.
+       name:   The variable for a PV or a list of PV names.
 
  KEYWORD PARAMETERS:
      ADD:      Set /ADD to add CA monitor for the specified name.
                Return 0 for success, -1 for failure.
 
-     CLEAR:    Set /CLEAAR to clear CA monitor for the specified name.
+     CLEAR:    Set /CLEAR to clear CA monitor for the specified name.
                Return 0 for success, -1 for failure.
 
      CHECK:    Set /CHECK to check for new event for the specified name.
@@ -1151,29 +1158,36 @@ at the IDL command line prompt.<P>
 
      GET:      Set /GET to get monitor values back for the specified name.
                Different type of monitor returns different vals array.
-               If non queue type monitor set, the vals array returns a 
+               If non queue type monitor set, the vals array returns a
                single value for each PV in the name variable.
                If the kewword /QUEUE is specified, in addition of vals,
                both num and overflow variables are also returned.
 
-     QUEUE:	Set /QUEUE flag to queue the value change event for the 
-               monitored channel until the user gets them. 
+     QUEUE:    Set /QUEUE flag to queue the value change event for the
+               monitored single channel until the user gets them.
 
      MAXQUEUE: The MAXQUEUE=no must be specified if /QUEUE is specified.
 
      MODE:     This flag indicates what type of monitor queue is desired.
-               The MODE=i where i can be 1/2/3, it defaults to 1. The 
-               MODE=1 or 2 monitor fills the QUEUE buff until it is fulled. 
+               The MODE=i where i can be 1/2/3, it defaults to 1. The
+               MODE=1 or 2 monitor fills the QUEUE buff until it is fulled.
                If MODE=1, the /GET will clear the QUEUE buff.
                IF MODE=2, the /GET will not clear the QUEUE buff.
-               The MODE=3 uses the circulat buffer, it keeps the most 
-               current MAXQUEUE values in the queue buffer. 
+               The MODE=3 uses the circular buffer, it keeps the most
+               current MAXQUEUE values in the queue buffer.
+
+               Default Vals returned in double precision form.
+     /INT      Return Vals converted to integer
+     /LONG     Return Vals converted to long integer
+     /BYTE     Return Vals converted to byte type
+     /FLOAT    Return Vals converted to float type
+     /STRING   Return Vals converted to string type
 
  OUTPUTS:
      vals:     Returns the array of data if either keyword /GET or /CHECK
                is specified
 
-     num:      Returns the real number of data in the vals array for the 
+     num:      Returns the real number of data in the vals array for the
                /QUEUE mode
 
      overflow: Returns the buffer full indicator for the /QUEUE mode
@@ -1184,21 +1198,22 @@ at the IDL command line prompt.<P>
        None.
 
  SIDE EFFECTS:
-       This routine will causes a channel access search to take place if 
+       This routine will causes a channel access search to take place if
        this is the first time this process variable has been referenced.
 
  RESTRICTIONS:
-       All the PV are monitored as double precision in this function.
+       All the PVs are monitored as double values in this function
+       unless the PV is a DBR_STRING type then monitored as string type.
        For getting the monitored queue array, only a single PV name can
        be specified.  For non queue type monitor, only the first value
-       for a PV can be returned by this function.  Use caGet to get 
+       for a PV can be returned by this function.  Use caGet to get
        array type of values back.
 
  PROCEDURE:
-	This routine uses Ezca_monitorArrayAdd(), Ezca_monitorArrayGet(),
+       This routine uses Ezca_monitorArrayAdd(), Ezca_monitorArrayGet(),
        Ezca_monitorArrayCheck(), Ezca_monitorArrayClear(), Ezca_queueAdd(),
-       Ezca_queueGet(),Ezca_queueZero(), and Ezca_queueClear() 
-       from the Ezca library.
+       Ezca_queueGet(),Ezca_queueZero(), and Ezca_queueClear()
+       from the EzcaScan library.
 
  EXAMPLES:
     Single value monitor
@@ -1208,14 +1223,16 @@ at the IDL command line prompt.<P>
        IDL> print,caMonitor('chademoai1',/clear)
 
     Use queue array monitor with maxqueue=100
- 
+
        IDL> print, caMonitor('chademoai1',/add,/queue,maxqueue=100)
        IDL> print, caMonitor('chademoai1',vals,num,overflow,/get,/queue,maxqueue=100)
        IDL> print, caMonitor('chademoai1',/clear,/queue)
 
  MODIFICATION HISTORY:
-       Written by:	Ben-chin Cha      Dec, 1995	
+       Written by:     Ben-chin Cha      Dec, 1995
        04-12-96    bkc   Modified on line help syntax
+       04-07-99    bkc   Return monitor values specification:
+                         /byte,/int,/long,/float,/string
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1227,24 +1244,24 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caPendEvent
+       caPendEvent
 
  PURPOSE:
-	This function causes the Ezca to call channel access ca_pend_event
+       This function causes the Ezca to call channel access ca_pend_event
        function.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	caPendEvent [,time=0.001] [,help=help]
+       caPendEvent [,time=0.001] [,help=help]
 
  INPUTS:
        None.
 
  KEYWORD PARAMETERS:
        TIME:  This keyword parameter is used to reset the timeout in seconds
-              used by ca_pend_event in Ezca library.
+              used by ca_pend_event in EzcaScan library.
 
        HELP:  If ,/HELP is set, on-line help will be displayed.
 
@@ -1255,20 +1272,20 @@ at the IDL command line prompt.<P>
        None.
 
  SIDE EFFECTS:
-       This routine sets the timeout for event monitor routines used in 
-       Ezca library and calls the ca_pend_event.
+       This routine sets the timeout for event monitor routines used in
+       EzcaScan library and calls the ca_pend_event.
 
  RESTRICTIONS:
-	Positive time must be used.
+       Positive time must be used.
 
  PROCEDURE:
-	This routine uses Ezca_setPendTime() from the Ezca library.
+       This routine uses Ezca_setPendTime() from the EzcaScan library.
 
  EXAMPLES:
-       IDL> caPendEvent, time=0.0001 
+       IDL> caPendEvent, time=0.0001
 
  MODIFICATION HISTORY:
- 	Written by:	Ben-chin Cha      Dec, 1995	
+       Written by:     Ben-chin Cha      Dec, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1280,11 +1297,11 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caPendIO
+       caPendIO
 
  PURPOSE:
-	This routine sets the timeout used by ca_pend_io in array get/
-       put used in Ezca library.
+       This routine sets the timeout used by ca_pend_io in array get/
+       put used in EzcaScan library.
 
  CATEGORY:
        EPICS Channel Access Interface
@@ -1296,10 +1313,10 @@ at the IDL command line prompt.<P>
        None.
 
  KEYWORD PARAMETERS:
-	TIME:   Use the TIME=time keyword to set the timeout waiting for
+       TIME:   Use the TIME=time keyword to set the timeout waiting for
                channel access I/O for single process variable name.
 
-	LIST_TIME: Use the LIST_TIME=list_time keyword to set the timeout 
+       LIST_TIME: Use the LIST_TIME=list_time keyword to set the timeout
                waiting for channel access I/O for a list of PV names.
 
        HELP:   If ,/HELP is specified, on line help will be displayed.
@@ -1312,20 +1329,20 @@ at the IDL command line prompt.<P>
 
  SIDE EFFECTS:
        These times will be used in array get/put from then on in all
-       ca_pend_io calls in Ezca library.
+       ca_pend_io calls in EzcaScan library.
 
  RESTRICTIONS:
        Positive real times should be used in those keywords.
 
  PROCEDURE:
-	This routine uses Ezca_setPendTime() from the Ezca library. 
+       This routine uses Ezca_setPendTime() from the EzcaScan library.
 
  EXAMPLES:
        IDL> caPendIO, time=0.1, list_time=3.
        IDL> caPendIO, /help
 
  MODIFICATION HISTORY:
- 	Written by:	Ben-chin Cha      Dec, 1995	
+       Written by:     Ben-chin Cha      Dec, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1337,19 +1354,19 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caPut
+       caPut
 
  PURPOSE:
-	This procedure writes a new value to a channel access process variable.
+       This procedure writes a new value to a channel access process variable.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	status = caPut(pvname, value)
+       status = caPut(pvname, value)
 
  INPUTS:
-	pvname:	The name of the process variable for which the new value
+       pvname: The name of the process variable for which the new value
                is to be written
 
        value:  The new value to be written. In general this can be a scalar
@@ -1357,14 +1374,21 @@ at the IDL command line prompt.<P>
                in that certain strings cannot be written to certain process
                variables, and some process variables cannot be passed arrays.
 
+ KEYWORD PARAMETERS:
+       WAIT:   Set this flag to force caPut to wait for a channel access
+               callback.  The default is not to wait for a callback, using the
+               ezca function ezcaPutOldCa.  The WAIT keyword results in a
+               call to ezcaPut, which uses channel access callbacks.
+
  OUTPUTS:
        The function return value of caPut is a status value.  The
-       status is 0 if the routine was successful (i.e. the process variable 
-       exists and a valid value was written) and non-zero if the routine 
+       status is 0 if the routine was successful (i.e. the process variable
+       exists and a valid value was written) and non-zero if the routine
        failed.
 
  PROCEDURE:
-	This routine uses ezcaPut(). The "nelem" and "type" parameters passed
+       This routine uses ezcaPut() if /WAIT is specified, and ezcaPutOldCa if
+       /WAIT is not specified.  The "nelem" and "type" parameters passed
        to ezcaPut are determined from the IDL data type and number of elements
        of the "value" parameter passed to caPut(). Strings are converted to
        to byte arrays before being passed.
@@ -1380,8 +1404,10 @@ at the IDL command line prompt.<P>
        IDL> status = caPut('my_waveform.VAL', findgen(100))
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
+       Sept. 16, 1998  Mark Rivers  Added WAIT keyword, made non-callback
+                                    version of caput the default
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1396,7 +1422,7 @@ at the IDL command line prompt.<P>
        caPutArray
 
  PURPOSE:
-       This function writes an array of data to a list of Channel Access 
+       This function writes an array of data to a list of Channel Access
        process variable. It returns 0 if successful, else retuns -1.
 
  CATEGORY:
@@ -1406,9 +1432,9 @@ at the IDL command line prompt.<P>
        Status = caPutArray(pvname, pdata, /event)
 
  INPUTS:
-       pvname:	The variable specifies a list of process variables for 
+       pvname: The variable specifies a list of process variables for
                which the input array of data is to be written to IOC.
-       pdata:  Input data array. The data array must be consistant with 
+       pdata:  Input data array. The data array must be consistant with
                the number of PV names defined in the pvname.
 
  KEYWORD PARAMETERS:
@@ -1422,7 +1448,7 @@ at the IDL command line prompt.<P>
       None.
 
  SIDE EFFECTS:
-       This routine will causes a channel access search to take place if 
+       This routine will causes a channel access search to take place if
        this is the first time this process variable has been referenced.
 
  RESTRICTIONS:
@@ -1430,11 +1456,11 @@ at the IDL command line prompt.<P>
        pdata is provided for the pvname.
 
  PROCEDURE:
-	This routine uses Ezca_putArray() from the Ezca library.
+       This routine uses Ezca_putArray() from the EzcaScan library.
 
  EXAMPLES:
        In the following example write a string value '11' to two PV
-       names: chademomask1.VAL  and chademoai2.VAL 
+       names: chademomask1.VAL  and chademoai2.VAL
 
        IDL> x = ['chademomask1', 'chademoai2']
        IDL> y = make_array(1, 2, /string)
@@ -1454,7 +1480,7 @@ at the IDL command line prompt.<P>
        IDL> print,pd
 
  MODIFICATION HISTORY:
-       Written by:	Ben-chin Cha      Dec, 1995	
+       Written by:     Ben-chin Cha      Dec, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1469,7 +1495,7 @@ at the IDL command line prompt.<P>
        caScan
 
  PURPOSE:
-       This function provides add/get/zero/clear monitor features on a 
+       This function provides add/get/zero/clear monitor features on a
        scan record and a set of PV names.
 
  CATEGORY:
@@ -1479,15 +1505,15 @@ at the IDL command line prompt.<P>
        Status = caScan(name,pvnames,nonames,npts,vals,op_keyword,max=no)
 
  INPUTS:
-       name:   The name of the process variable which has control of 
+       name:   The name of the process variable which has control of
                triggering scan, e.g. the scan record name.
        pvnames: A list of detector process variables for which the values
                 are to be monitored by the trigger name.
 
  KEYWORD PARAMETERS:
-      ADD:     Set this flag /ADD  to add a complete set of monitor for 
-               name and pvnames. 
-               Return 0 if successful, -1 if failed, 1 if old monitor 
+      ADD:     Set this flag /ADD  to add a complete set of monitor for
+               name and pvnames.
+               Return 0 if successful, -1 if failed, 1 if old monitor
                already existed. If succeeds, the output variable npts
                is set to the number of data to be detected, and the
                nonames is set to the number of PVs in pvnames.
@@ -1497,8 +1523,8 @@ at the IDL command line prompt.<P>
 
       GET:     Set this flag /GET to get scan array of monitor values back.
                Return -1 if failed, return 1 if scan is properly set up but
-               not triggered yet, return >1 if real data detected. 
-               If succeeds, the npts is set to the number of data so far 
+               not triggered yet, return >1 if real data detected.
+               If succeeds, the npts is set to the number of data so far
                detected.
 
       ZERO:    Set this flag /ZERO to zero the allocated space.
@@ -1510,16 +1536,16 @@ at the IDL command line prompt.<P>
 
  OUTPUTS:
      nonames:  This variable returns the number of PVs in pvnames.
-     npts:     This variable returns the current number of data points 
+     npts:     This variable returns the current number of data points
                detected by the scan record.
-     vals:     This detector data array buff, vals(nonames,max), stores   
+     vals:     This detector data array buff, vals(nonames,max), stores
                the detected data so far captured.
 
  COMMON BLOCKS:
        None.
 
  SIDE EFFECTS:
-       This routine will causes a channel access search to take place if 
+       This routine will causes a channel access search to take place if
        this is the first time this process variable has been referenced.
 
  RESTRICTIONS:
@@ -1546,7 +1572,7 @@ at the IDL command line prompt.<P>
        IDL> print,caScan('name',pvnames,/clear,max=100)
 
  MODIFICATION HISTORY:
-       Written by:	Ben-chin Cha      Dec, 1995	
+       Written by:     Ben-chin Cha      Dec, 1995
 
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
@@ -1559,7 +1585,7 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caSearch
+       caSearch
 
  PURPOSE:
        This function searches for a list of process variable names.
@@ -1572,7 +1598,7 @@ at the IDL command line prompt.<P>
        Status = caSearch(pvname)
 
  INPUTS:
-      pvname: The variable for a list of process variables for which the 
+      pvname: The variable for a list of process variables for which the
               channel access search to be done.
 
  KEYWORD PARAMETERS:
@@ -1585,14 +1611,14 @@ at the IDL command line prompt.<P>
        None.
 
  SIDE EFFECTS:
-       This routine will causes a channel access search to take place if 
+       This routine will causes a channel access search to take place if
        this is the first time pvnames has been referenced.
 
  RESTRICTIONS:
        None.
 
  PROCEDURE:
-       This routine uses Ezca_search_list() from the Ezca library.
+       This routine uses Ezca_search_list() from the EzcaScan library.
 
  EXAMPLES:
        IDL> print,caSearch('chademoai1')
@@ -1600,7 +1626,7 @@ at the IDL command line prompt.<P>
        IDL> status = caSearch(x)
 
  MODIFICATION HISTORY:
-       Written by:	Ben-chin Cha      Dec, 1995	
+       Written by:     Ben-chin Cha      Dec, 1995
       04-11-96   bkc   Fix typo error names to name
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
@@ -1613,32 +1639,32 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caSetMonitor
+       caSetMonitor
 
  PURPOSE:
-	This procedure sets a monitor on the specified process variable.
+       This procedure sets a monitor on the specified process variable.
        This causes a channel access callback to execute whenever the value
        of that process variable changes.  Subsequent calls to caGet() after
        calling caSetMonitor will read the values provided by the callbacks,
        rather than reading from the IOC.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	status = caSetMonitor(pvname)
+       status = caSetMonitor(pvname)
 
  INPUTS:
-	pvname: The name of the process variable on which to set the monitor.
+       pvname: The name of the process variable on which to set the monitor.
 
  OUTPUTS:
        The function return value of caSetMonitor is a status value.  The
-       status is 0 if the routine was successful (i.e. the process variable 
+       status is 0 if the routine was successful (i.e. the process variable
        exists) and non-zero if the routine failed.
 
  PROCEDURE:
-	This routine uses ezcaSetMonitor(). The "type" parameter required
-       by ezcaSetMonitor is the native EZCA data type as determined 
+       This routine uses ezcaSetMonitor(). The "type" parameter required
+       by ezcaSetMonitor is the native EZCA data type as determined
        by caGetCountAndType().
 
  EXAMPLES:
@@ -1646,8 +1672,8 @@ at the IDL command line prompt.<P>
        IDL> status = caGet('test_ao1', value)
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1659,34 +1685,34 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caSetRetryCount
+       caSetRetryCount
 
  PURPOSE:
-	This procedure sets the value of the EZCA RetryCount parameter.
+       This procedure sets the value of the EZCA RetryCount parameter.
        In conjunction with the EZCA Timeout parameter it determines how
        long EZCA will try to connect to a process variable before giving up.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	caSetRetryCount, retrycount
+       caSetRetryCount, retrycount
 
  INPUTS:
-	RetryCount: The integer retry count.
+       RetryCount: The integer retry count.
 
  OUTPUTS:
        None
 
  PROCEDURE:
-	This routine uses ezcaSetRetryCount().
+       This routine uses ezcaSetRetryCount().
 
  EXAMPLES:
        IDL> caSetRetryCount, 100
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1698,35 +1724,35 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caSetTimeout
+       caSetTimeout
 
  PURPOSE:
-	This procedure sets the value of the EZCA Timeout parameter. This
+       This procedure sets the value of the EZCA Timeout parameter. This
        value determines the time parameter passed to ca_pend_io() in EZCA.
        In conjunction with the EZCA RetryCount parameter it determines how
        long EZCA will try to connect to a process variable before giving up.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	caSetTimeout, timeout
+       caSetTimeout, timeout
 
  INPUTS:
-	Timeout:  The timeout value in seconds (floating point).
+       Timeout:  The timeout value in seconds (floating point).
 
  OUTPUTS:
        None
 
  PROCEDURE:
-	This routine uses ezcaSetTimeout().
+       This routine uses ezcaSetTimeout().
 
  EXAMPLES:
        IDL> caSetTimeout, .001
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1738,26 +1764,26 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caStartGroup
+       caStartGroup
 
  PURPOSE:
-	This procedure starts an "asynchronous group".  Within an asynchronous
+       This procedure starts an "asynchronous group".  Within an asynchronous
        group all calls to caGet and caPut are asynchronous, i.e. they queue
        a request and return immediately without waiting for a reply from
-       the channel access servers. Calling caEndGroup causes the queue to be 
-       flushed and waits for the replies. The use of asynchronous 
+       the channel access servers. Calling caEndGroup causes the queue to be
+       flushed and waits for the replies. The use of asynchronous
        groups can greatly improve the efficiency of channel access. The user
        must be aware of the restrictions on caGet outlined under the
        description of that routine.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	caStartGroup
+       caStartGroup
 
  INPUTS:
-	None.
+       None.
 
  OUTPUTS:
        None
@@ -1767,7 +1793,7 @@ at the IDL command line prompt.<P>
        are currently in an asynchronous group. This routine sets that flag.
 
  PROCEDURE:
-	This routine uses ezcaStartGroup().
+       This routine uses ezcaStartGroup().
 
  EXAMPLES:
        IDL> caStartGroup
@@ -1785,8 +1811,8 @@ at the IDL command line prompt.<P>
            ERTM            FLOAT     =       7.10000
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1798,47 +1824,47 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caTimeStamp
+       caTimeStamp
 
  PURPOSE:
        This function returns the time stamp of corresponding value for
        the specified record name.
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	string = caTimeStamp(pvname)
+       string = caTimeStamp(pvname)
 
  INPUTS:
-       pvname:	The name of the process variable for which the timestamp is to
+       pvname: The name of the process variable for which the timestamp is to
                be returned.
 
  KEYWORD PARAMETERS:
        None.
 
  OUTPUTS:
-	string:  The function returns the time stamp string for the requested
-                PV name. 
+       string:  The function returns the time stamp string for the requested
+                PV name.
 
  COMMON BLOCKS:
        None.
 
  SIDE EFFECTS:
-	This routine will causes a channel access search to take place if 
-       this is the first time this process variable has been referenced. 
+       This routine will causes a channel access search to take place if
+       this is the first time this process variable has been referenced.
 
  RESTRICTIONS:
        Only single PV name is allowed in input.
 
  PROCEDURE:
-	This routine uses Ezca_timeStamp() from the Ezca library.
+       This routine uses Ezca_timeStamp() from the EzcaScan library.
 
  EXAMPLES:
        IDL> print,caTimeStamp('chademoai1')
 
  MODIFICATION HISTORY:
- 	Written by:	Ben-chin Cha      Dec, 1995	
+       Written by:     Ben-chin Cha      Dec, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1850,28 +1876,28 @@ at the IDL command line prompt.<P>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
-	caTrace
+       caTrace
 
  PURPOSE:
-	This procedure turns the EZCA trace flag on or off. Turning on
-       the trace flag prints lots of information which is mainly useful 
+       This procedure turns the EZCA trace flag on or off. Turning on
+       the trace flag prints lots of information which is mainly useful
        to developers.  Setting the trace flag results in less
        verbose output than setting the debug flag (see caDebug).
 
  CATEGORY:
-	EPICS Channel Access Interface
+       EPICS Channel Access Interface
 
  CALLING SEQUENCE:
-	caTrace, state
+       caTrace, state
 
  INPUTS:
-	state:  state=1 turns trace on, state=0 turns trace off.
+       state:  state=1 turns trace on, state=0 turns trace off.
 
  OUTPUTS:
        None
 
  PROCEDURE:
-	This routine uses ezcaTraceOn() and ezcaTraceOff().
+       This routine uses ezcaTraceOn() and ezcaTraceOff().
 
  EXAMPLES:
        IDL> caTrace, 1     ;Turn on trace
@@ -1886,8 +1912,8 @@ at the IDL command line prompt.<P>
        IDL> caTrace, 0     ; Turn off trace
 
  MODIFICATION HISTORY:
- 	Written by:	Mark Rivers
-	June 28, 1995	
+       Written by:     Mark Rivers
+       June 28, 1995
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1902,8 +1928,8 @@ at the IDL command line prompt.<P>
        caVersion
 
  PURPOSE:
-       This function returns the string of current version information 
-       about ezcaIDL 
+       This function returns the string of current version information
+       about ezcaIDL
 
  CATEGORY:
        EPICS Channel Access Interface
@@ -1915,11 +1941,11 @@ at the IDL command line prompt.<P>
        None.
 
  OUTPUTS:
-       Return the string which gives the version information about 
+       Return the string which gives the version information about
        ezcaIDL, ezca, Ezca, and EPICS base verion number.
 
  PROCEDURE:
-	This routine uses Ezca_version() from the Ezca library.
+       This routine uses Ezca_version() from the EzcaScan library.
 
  EXAMPLE:
        IDL> print, caVersion()
@@ -2038,6 +2064,7 @@ at the IDL command line prompt.<P>
 <A NAME="CAWIDGETSETMONITOR">
 <H2>CAWIDGETSETMONITOR</H2></A>
 <A HREF="#CAWIDGETCLEARMONITOR">[Previous Routine]</A>
+<A HREF="#EZCASTRINGTOBYTE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -2120,6 +2147,82 @@ at the IDL command line prompt.<P>
  	Written by:	Mark Rivers, July 20, 1995
 </PRE><P>
 <STRONG>(See ezcaIDLWidgets.pro)</STRONG><P>
+<HR>
+ 
+<A NAME="EZCASTRINGTOBYTE">
+<H2>EZCASTRINGTOBYTE</H2></A>
+<A HREF="#CAWIDGETSETMONITOR">[Previous Routine]</A>
+<A HREF="#RELEASE NOTES">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+       ezcaStringToByte
+
+ PURPOSE:
+       This function converts an array of strings to a 2-D byte array
+
+ CATEGORY:
+       EPICS Channel Access Interface
+
+ CALLING SEQUENCE:
+       byt = ezcaStringToByte(Str, Num)
+
+ INPUTS:
+       Str:   A 1-D array of strings, typically EPICS PV names.
+
+ OUTPUTS:
+       This function returns a 2-D byte [MAX_STRING_SIZE, n_elements(Str)] which
+       is the input string array converted to fixed-length byte arrays.
+               is specified
+
+       Num: Returns n_elements(Str) as a short integer
+
+ COMMON BLOCKS:
+       ezca_common holds the value of MAX_STRING_SIZE.
+
+ EXAMPLE:
+       IDL> str = ['a', 'b', 'c']
+       IDL> byt = ezcaStringToByte(str, num)
+       IDL> help, byt, num
+       BYT             BYTE      = Array[132, 3]
+       NUM             INT       =        3
+
+ MODIFICATION HISTORY:
+       Written by:   Mark Rivers, 26-Sep-2001
+</PRE><P>
+<STRONG>(See ezcaIDL.pro)</STRONG><P>
+<HR>
+ 
+<A NAME="RELEASE NOTES">
+<H2>RELEASE NOTES</H2></A>
+<A HREF="#EZCASTRINGTOBYTE">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+ Release notes
+   Version 2:
+       Everything prior to 27-Sep-2001 when I started making release notes!
+       Prior to this date there are release notes for each routine but no
+       global release notes for the file.
+
+  Version 3.0
+       28-Sep-2001, Mark Rivers
+           Signficant rewrite.  Changed many routines so that we no longer pass
+           any string variables with CALL_EXTERNAL or LINKNLOAD.  This was done
+           to simplify things, since there are now at least 4 different conventions
+           for passing strings to shareable libraries (PVWAVE, IDL prior to 5.1 on
+           Windows, IDL 5.1-5.4, and IDL 5.5 and later).  We now only pass byte
+           arrays, not strings.  This permits a single shareable library to be used
+           for any version of PV-WAVE or IDL.
+           There are now 2 constants in ezca_common, MAX_STRING_SIZE and
+           MAX_ENUM_STATES. These values are set to 40 and 16 respectively in
+           caInit.  It is now MANDATORY to call caInit before calling any other
+           routine in this file, preferably in the IDL_STARTUP file.
+           Reformatted a lot of the code, and used ENDIF and ENDFOR consistently
+           rather than simple END statements.
+           Added support for unsigned short and unsigned long integer data types.
+</PRE><P>
+<STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
  
 </body>

@@ -5,23 +5,24 @@
 
 <BODY>
 <H1>ezcaIDL User's Guide</H1>
+<h2>Version 3.0</h2>
 <EM>Mark Rivers<BR>
 Center for Advanced Radiation Sources<BR>
 University of Chicago<BR>
-rivers@cars3.uchicago.edu<BR>
-July 12, 1995<BR>
+rivers@cars.uchicago.edu<BR>
+September 27, 2001<BR>
 </EM>                                
 
 <H2>Table of Contents</H2>
 <UL>
 <LI><A HREF="#Overview">Overview</A>
+<LI><A HREF="#Release">Release notes</A>
 <LI><A HREF="#Procedures">Procedures and Functions</A>
 <LI><A HREF="#Routines">List of Routines by Functional Group</A>
 <LI><A HREF="#Related">Related Documentation</A>
 <LI><A HREF="#Synchronous">Synchronous Groups</A>
 <LI><A HREF="#Error">Error Handling</A>
 <LI><A HREF="#Debugging">Debugging</A>
-<LI><A HREF="#Differences">Summary of differences between ezcaIDL and CaWave</A>
 <LI><A HREF="#Files">Files</A>
 <LI><A HREF="#Libraries">Required Support Libraries</A>
 <LI><A HREF="#UnixSetup">Unix Setup</A>
@@ -36,7 +37,7 @@ ezcaIDL is a library of routines for
 <A HREF="http://sslab.colorado.edu:2222/projects/IDL/idl_ssl_home.html">IDL</A> 
 and <A HREF="http://www.vni.com/pvwave.dir/wavehome.html">PV-WAVE</A>
 which provides an
-interface to EPICS Channel Access through the EZCA library.  
+interface to EPICS Channel Access through the EZCA and EzcaScan libraries.  
 <P>
 PV-WAVE and IDL are closely related packages which are described as 
 <CITE>Data Visualization Tools</CITE>.  They consist of 
@@ -48,8 +49,8 @@ Both also provide easy to use widget toolkits for quickly developing GUI
 applications.
 <P>
 Although there is nearly a one-for-one match between the routines in ezcaIDL 
-and the EZCA library itself, the syntax of the IDL routines is not
-the same as the syntax of the corresponding EZCA routines.  The reason for this
+and the EZCA and EzcaScan libraries, the syntax of the IDL routines is not
+the same as the syntax of the corresponding EZCA and EzcaScan routines.  The reason for this
 is that IDL is more "object oriented" and relieves the programmer of much of
 the detailed bookkeeping required of the C programmer.  Thus for example,  the
 IDL routine <CODE>caGet()</CODE> returns, by default, 
@@ -58,6 +59,27 @@ and element count of the process variable.  This is not true of the
 corresponding C routine <CODE>ezcaGet()</CODE>, which requires the user to
 specify the data type and number of elements to be returned.
 <P>
+
+<H2><A NAME="Release">Release notes</A></H2>
+<h3>
+Version 3.0 28-Sep-2001&nbsp;</h3>
+<p>This was a signficant rewrite.</p>
+<UL>
+<LI>No string variables are passed to the shareable
+libraries in this version.  This was done
+to simplify things, since there are now at least 4 different conventions
+for passing strings to shareable libraries (PVWAVE, IDL prior to 5.1 on
+Windows, IDL 5.1-5.4, and IDL 5.5 and later).  We now only pass byte
+arrays, not strings.  This permits a single shareable library to be used
+for any version of PV-WAVE or IDL.
+<LI>There are now 2 constants in ezca_common, MAX_STRING_SIZE and
+MAX_ENUM_STATES. These values are set to 40 and 16 respectively in
+caInit.  It is now MANDATORY to call caInit before calling any other
+routine in this file, preferably in the IDL_STARTUP file.
+<LI>Reformatted a lot of the code, and used ENDIF and ENDFOR consistently
+rather than simple END statements.
+<LI>Added support for unsigned short and unsigned long integer data types.
+</UL>
 
 <H2><A NAME="Procedures">Procedures and Functions</A></H2>
 
@@ -77,9 +99,17 @@ must be specified correctly.
 
 ezcaIDL consists of the following routines, grouped by functionality:
 <UL>
+<LI>Initialization routines
+<PRE>
+    caInit [,flag] [,help=help]
+    String = caVersion()
+</PRE>
+
+<UL>
 <LI>Routines which return information about process variables
 <PRE>
-    Status = caGet(pvname, value, /string, max=max)
+    Status = caGet(pvname, value, /STRING, max_elements=max_elements)
+    Status = caGetArray(pvnames, pdata, max=no, type=i, /TYPE, /EVENT)
     Status = caGetControlLimits(pvname, low, high)
     Status = caGetGraphicLimits(pvname, low, high)
     Status = caGetPrecision(pvname, precision)
@@ -87,11 +117,14 @@ ezcaIDL consists of the following routines, grouped by functionality:
     Status = caGetUnits(pvname, units)
     Status = caGetEnumStrings(pvname, strings)
     Status = caGetCountAndType(pvname, count, type)
+    Status = caSearch(pvnames)
+    String = caTimeStamp(pvname)
 </PRE>
 
 <LI>Routines which write new values to process variables
 <PRE>
     Status = caPut(pvname, value)
+    Status = caPutArray(pvname, pdata, /event)
 </PRE>
 
 <LI>Routines which control channel access timeouts
@@ -100,6 +133,8 @@ ezcaIDL consists of the following routines, grouped by functionality:
     caSetTimeout, timeout
     RetryCount = caGetRetryCount()
     caSetRetryCount, retrycount
+    caPendEvent [,time=0.001] [,help=help]
+    caPendIO, time=time, list_time=list_time
 </PRE>
 
 <LI>Routines which control synchronous groups
@@ -113,6 +148,12 @@ ezcaIDL consists of the following routines, grouped by functionality:
     Status = caSetMonitor(pvname)
     Status = caClearMonitor(pvname)
     State = caCheckMonitor(pvname)
+    Status = caMonitor(pvname, vals, num, overflow, op_keyword, type_keyword, max=no)
+</PRE>
+
+<LI>Routines which collect data with the EPICS scan record
+<PRE>
+    Status = caScan(name, pvnames, nonames, npts, vals, op_keyword, max=no)
 </PRE>
 
 <LI>Routines which control debugging and error messages
@@ -120,6 +161,7 @@ ezcaIDL consists of the following routines, grouped by functionality:
     caDebug, state
     caTrace, state
     caError, err_string, /ON, /OFF, /PRINT, prefix=prefix
+    Status = caGetError(Pvname, Err)
 </PRE>
 </UL>
 
@@ -278,122 +320,16 @@ This can be turned off by calling
 </PRE>
 
 
-<H2><A NAME="Differences">
-Summary of differences between ezcaIDL and CaWave</A></H2>
-
-
-ezcaIDL is intended to be a replacement for the existing CaWave library, which
-interfaces to EPICS Channel Access through libLca.  The routines provided in
-ezcaIDL are similar, but not identical, to those provided in CaWave.
-<P>
-There were several motivations for creating this new library for IDL:
-<UL>
-<LI>EZCA is officially supported as the "simple interface" library to Channel
-Access by the EPICS collaboration.  libLca does not have such official
-support.
-
-<LI>The existing CaWave library does not support status return information 
-on all Channel Access calls which could generate errors.
-
-<LI>The existing CaWave library has significant limitations on grouping
-of Channel Access calls which are executed asynchronously before calling
-<CODE>ca_pend_io()</CODE> or <CODE>ca_pend_event()</CODE>.  
-For example, in CaWave <CODE>caget()</CODE> of a list of process variables 
-can only return
-an array of doubles or an array of strings. It is not possible to return 
-other data types, and it is not possible to have an asynchronous get of a 
-process variable which is itself an array.  
-ezcaIDL uses the <CODE>ezcaStartGroup</CODE> and
-<CODE>ezcaEndGroup</CODE> calls to allow any mix of <CODE>caPut</CODE> and
-<CODE>caGet</CODE>
-calls, and for these
-to include any mix of data types, including arrays.
-
-<LI>The existing CaWave library does not permit monitoring of process variables
-which are arrays.
-
-</UL>
-
-There are two new features of CaWave which are not yet part of ezcaIDL.
-<UL>
-<LI>Monitor queues.  These permit CaWave to maintain a FIFO of monitor
-values.  ezcaIDL only maintains the most recent monitor value.  This means that
-intermediate monitor values can be missed, which is undesirable for 
-some applications.
-
-<LI>Monitor "scan" where a monitor on one process variable
-triggers reading of the monitor
-values on a set of related process variables.
-This feature is desirable in some data
-acquisition applications.
-
-</UL>
-These features will be added to ezcaIDL at a future date.
-<P>
-All applications which use CaWave will need to be modified if they are to use
-ezcaIDL instead.  However, the conversion is generally quite simple.
-<P>
-The major differences between ezcaIDL and CaWave include the following:
-<UL>
-<LI>In CaWave a <CODE>caGet()</CODE> on a scalar process 
-variable always returned a
-double or a string.  In ezcaIDL <CODE>caGet()</CODE> returns, 
-by default, a value with
-the native data type of the process variable. 
-<CODE>caGet</CODE> can be forced to 
-return a string value with the <CODE>/STRING</CODE> keyword switch.
-
-<LI>In CaWave <CODE>caGet()</CODE> was a function which returned 
-the value as the function
-return.  In ezcaIDL <CODE>caGet()</CODE> returns a status 
-code as the function return
-value and returns the data value in a parameter.  This change was
-required in order to implement  EZCA synchronous groups.  It is also
-viewed as desirable to return a status value on all operations which can
-generate a channel access error, and to make the syntax of calling 
-<CODE>caGet</CODE>
-and <CODE>caPut</CODE> similar.
-
-<LI>In CaWave one had to explicitly ask for the monitor value in 
-<CODE>caGet()</CODE>.  In
-ezcaIDL <CODE>caGet()</CODE> automatically reads the 
-monitor value for a process 
-variable if <CODE>caSetMonitor()</CODE> has been 
-called for that process variable.
-
-<LI>Many CaWave routines accepted an array of process variable names, for
-example <CODE>caGet()</CODE> and <CODE>caPut()</CODE>.  
-<CODE>caGet</CODE> returned an array of values, while
-<CODE>caPut</CODE> wrote an array of values.  
-This method was quite restrictive, since
-the values were required to be either all scalar doubles or 
-all scalar strings.  
-In ezcaIDL the concept of synchronous groups is much less
-restrictive, since it permits any mix of 
-calls to <CODE>caGet</CODE>, <CODE>caPut</CODE>
-and other
-routines, and there is no restriction on the data types or number of
-elements in the values for these calls.
-
-<LI>In CaWave it was possible to call 
-<CODE>caPendIO</CODE> and <CODE>caPendEvent</CODE>
-directly. This
-is not necessary or possible in ezcaIDL.  The timeouts for channel access
-operations are now set with 
-<CODE>caSetTimeout</CODE> and <CODE>caSetRetryCount</CODE>.
-
-</UL>
-
 <H2><A NAME="Files">Files</A></H2>
 
 ezcaIDL consists of the following files:
 <DL>
 <DT><CODE>ezcaIDL.c</CODE>
-<DD>This file is a thin interface between IDL and EZCA. It converts the
+<DD>This file is a thin interface between IDL and PV-WAVE and EZCA and EzcaScan. It converts the
 parameters passed by IDL <CODE>call_external()</CODE> or 
 PV-WAVE <CODE>linknload()</CODE>
 to the form
-required by EZCA.  It directly implements some functions which are not
+required by EZCA and EzcaScan.  It directly implements some functions which are not
 provided in the EZCA library.  
 These include <CODE>ezcaIDLGetCountAndType()</CODE>
 and <CODE>ezcaIDLGetEnumStrings()</CODE>.  
@@ -425,27 +361,25 @@ ezcaIDL requires the following support libraries in order to build the shareable
 object file.  Users who want to port ezcaIDL to another architecture need to
 port these libraries first.
 <PRE>
-    extensions/.../ezca
-    base/.../libca
-    base/.../libCom
+    extensions/src/ezca
+    extensions/src/EzcaScan
+    base/src/ca
+    base/src/libCom
 </PRE>
 
 <H2><A NAME="UnixSetup">Unix Setup</A></H2>
 
 The following additions to your <CODE>.login</CODE> file will facilitate 
-the use of ezcaIDL.
-
-<PRE>
+the use of ezcaIDL.<PRE>
 # Define an IDL or PV-WAVE startup file to be executed when IDL or PV-WAVE are
 # started
 setenv IDL_STARTUP ~/idl_startup.pro
 setenv WAVE_STARTUP ~/wave_startup.pro
 #
-# Define the location of ezcaIDL.so or ezcaWave.so so these files can be located
-# no matter what the current default directory is. These need to be modified
-# according to where the .so files are placed on your system.
-setenv ezcaIDL_share /usr/local/epics/extensions/bin/sun4/ezcaIDL.so
-setenv ezcaWave_share /usr/local/epics/extensions/bin/sun4/ezcaWave.so
+# Define the location of ezcaIDL.so so this file can be located
+# no matter what the current default directory is. This needs to be modified
+# according to where the .so file is placed on your system.
+setenv EZCA_IDL_SHARE /usr/local/epics/extensions/bin/solaris/ezcaIDL.so
 </PRE>
 
 In the IDL or PV-WAVE startup files 
@@ -457,6 +391,7 @@ the preceeding example <CODE>.login</CODE> file) add the following lines
 !QUIET=1             ; So things will compile without informational messages
 .RUN ezcaIDL         ; For both IDL and PV-WAVE
 .RUN ezcaIDLWidgets  ; For IDL widget users
+caInit               ; To define some required constants
 ;
 </PRE>
 
@@ -465,23 +400,18 @@ the preceeding example <CODE>.login</CODE> file) add the following lines
 
 The following additions to your <CODE>LOGIN.COM</CODE> file will 
 facilitate the use of 
-ezcaIDL.
-
-<PRE>
+ezcaIDL.<PRE>
 $! Define an IDL or PV-WAVE startup file to be executed when IDL or PV-WAVE 
 $! are started
 $ DEFINE IDL_STARTUP SYS$LOGIN:idl_startup.pro
 $ DEFINE WAVE_STARTUP SYS$LOGIN:wave_startup.pro
 $!
-$! Define the location of ezcaIDL.EXE or ezcaWave.EXE so these files can be 
+$! Define the location of ezcaIDL.EXE so this file can be 
 $! located no matter what the current default directory is. 
-$! These need to be modified according to where the .EXE files are placed on 
+$! These need to be modified according to where the .EXE file is placed on 
 $! your system.
 $ DEFINE ezcaIDL_EXE  PUBLIC_DISK:[PUBLIC.EPICS.EXTENSIONS.BIN]ezcaIDL.EXE
-$ DEFINE ezcaIDL_SHARE ezcaIDL_EXE
-or
-$ DEFINE ezcaWave_EXE  PUBLIC_DISK:[PUBLIC.EPICS.EXTENSIONS.BIN]ezcaWave.EXE
-$ DEFINE ezcaWave_SHARE ezcaWave_EXE
+$ DEFINE EZCA_IDL_SHARE ezcaIDL_EXE
 </PRE>
 
 In the IDL or PV-WAVE startup files 
@@ -492,6 +422,7 @@ the preceeding example <CODE>login.com</CODE> file) add the following lines
 !QUIET=1             ; So things will compile without informational messages
 .RUN ezcaIDL         ; For both IDL and PV-WAVE
 .RUN ezcaIDLWidgets  ; For IDL widget users
+caInit
 ;
 </PRE>
 
@@ -504,12 +435,12 @@ The following examples illustrate how to use some of the routines in ezcaIDL.
 ; Create a sine wave array, write it to a waveform record, read it back again
 ; and plot it.
 
-IDL> name = "idl_test:wf1"
-IDL> status = caGetCountAndType(name, n, type)
-IDL> data = sin(dindgen(n) * 2 * !PI / (n-1))
-IDL> status = caPut(name, data)
-IDL> status = caGet(name, readback)
-IDL> plot, readback
+IDL&gt; name = &quot;idl_test:wf1&quot;
+IDL&gt; status = caGetCountAndType(name, n, type)
+IDL&gt; data = sin(dindgen(n) * 2 * !PI / (n-1))
+IDL&gt; status = caPut(name, data)
+IDL&gt; status = caGet(name, readback)
+IDL&gt; plot, readback
 
 
 ; Print the list of valid values for the .SCAN field of a record as strings,
@@ -651,14 +582,14 @@ pro example, name
             monitor:    0L, $
             value:      0L, $
             exit:       0L }
-    base=widget_base(title="Example", /column)  ; The base widget
+    base=widget_base(title=&quot;Example&quot;, /column)  ; The base widget
     widget_ids.monitor=base                     ; The monitor widget id=base
     widget_ids.value=widget_text(base, xsize=20) ; Widget to display new value
-    widget_ids.exit=widget_button(base, value="Exit")  ; Exit button
+    widget_ids.exit=widget_button(base, value=&quot;Exit&quot;)  ; Exit button
     widget_control, base, /realize              ; Display the widgets
     t=caWidgetSetMonitor(name, widget_ids.monitor); Call caWidgetSetMonitor
     pv_name = name                              ; Copy name to common
-    xmanager, "example", base                   ; Start the program
+    xmanager, &quot;example&quot;, base                   ; Start the program
 end
 </PRE>
 

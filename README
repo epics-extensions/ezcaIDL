@@ -1,7 +1,7 @@
 ezcaIDL is a library of routines for IDL and PV-WAVE which provides an
 interface to EPICS Channel Access through the EZCA library. It is intended to
 replace the existing CaWave extension. ezcaIDL has been built and tested on
-sun4, solaris, SGI, and AXP/VMS systems.
+solaris, sun4, WIN32, alpha, Linux, SGI, and AXP/VMS systems.
 
 The following files are contained in the ezcaIDL directory.
 
@@ -22,11 +22,14 @@ ezcaIDLRef.html
 
 makeEzcaIDLRef.pro
     An IDL procedure to build ezcaIDLRef.html from the documentation headers in
-    ezcaILD.PRO and ezcaIDLWidgets.pro.
+    ezcaIDL.PRO and ezcaIDLWidgets.pro.
+
+ezcaIDL.def
+    A file that defines the entry points for ezcaIDL.dll on WIN32.
 
 Makefile
-Makefile.Unix
-    Files to build ezcaIDL on Unix systems. Used to the GNU make program.
+Makefile.Host
+    Files to build ezcaIDL. Used to the GNU make program.
 
 DESCRIP.MMS
     A file to build ezcaIDL on VMS systems. It is used by Digital's MMS product
@@ -35,9 +38,3 @@ DESCRIP.MMS
 AXP_OPTIONS.OPT
     A VMS linker options file. This version is only for AXP systems.
 
-____________________________________________________________
-Mark Rivers                             (312) 702-2279 (office)
-CARS                                    (312) 702-9951 (secretary)
-Univ. of Chicago                        (312) 702-5454 (FAX)
-5640 S. Ellis Ave.                      (708) 922-0499 (home)
-Chicago, IL 60637                       rivers@cars3.uchicago.edu (Internet) 

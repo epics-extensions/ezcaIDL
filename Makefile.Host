@@ -1,9 +1,7 @@
 #	Makefile.Host
 
 TOP = ../../..
-#TOP = ../../../../base
 include $(TOP)/config/CONFIG_EXTENSIONS
-#include $(TOP)/config/CONFIG_BASE
 CMPLR = STRICT
 
 #	build shared library
@@ -18,7 +16,6 @@ SCRIPTS = ezcaIDL.pro ezcaIDLWidgets.pro
 #
 
 USR_INCLUDES+= -I../../ezca -I../../EzcaScan
-USR_CFLAGS = -DIDL
 
 # on generic system
 LIBSRCS := ezcaIDL.c
@@ -30,17 +27,8 @@ LIBRARY := ezcaIDL
 
 #	need additional libs to build
 PROD_LIBS_DEFAULT :=  EzcaScan ezca ca Com
-###PROD_LIBS_WIN32 := EzcaScanObj ezca ca Com
 ezca_DIR=$(INSTALL_LIB)
 EzcaScan_DIR=$(INSTALL_LIB)
-#EzcaScanObj_DIR=$(INSTALL_LIB)
-
-ifeq ($(HOST_ARCH),alpha)
-PROD := ezcaIDL.so
-ezcaIDL.so : ezcaIDL.c
-	ld -S -shared -o ezcaIDL.so ezcaIDL.o -L. -L$(INSTALL_LIB) -L$(EPICS_BASE_LIB) -lezca -lEzcaScan -lca -lCom
-endif
-
 
 include $(TOP)/config/RULES.Host
 
