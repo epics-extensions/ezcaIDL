@@ -1465,7 +1465,7 @@ FUNCTION caVersion
 ;       ezcaIDL, ezca, Ezca, and EPICS base verion number.
 ;
 ; PROCEDURE:
-;	This routine uses Ezca_version() from the Ezca library.
+;	This routine uses Ezca_version() from the ezcaScan library.
 ;
 ; EXAMPLE:
 ;       IDL> print, caVersion()
@@ -1500,7 +1500,7 @@ PRO caInit,flag, help=help , print=print
 ;
 ; PURPOSE:
 ;	This routine sets the channel access timeout used by list array
-;       functions defined in Ezca library.
+;       functions defined in ezcaScan library.
 ;
 ; CATEGORY:
 ;	EPICS Channel Access Interface
@@ -1509,7 +1509,7 @@ PRO caInit,flag, help=help , print=print
 ;	caInit [,flag] [,help=help]
 ;
 ; INPUTS:
-;	flag:	Optional flag, if set to -1  Ezca library default timeout
+;	flag:	Optional flag, if set to -1  ezcaScan library default timeout
 ;               settings will be used.
 ;
 ; KEYWORD PARAMETERS:
@@ -1523,7 +1523,7 @@ PRO caInit,flag, help=help , print=print
 ;
 ; SIDE EFFECTS:
 ;       This routine set the channel access timeout values used in the
-;       Ezca library.  This routine set the timeout to 3 seconds for
+;       ezcaScan library.  This routine set the timeout to 3 seconds for
 ;       lists of process variables, and sets the timeout for
 ;       ca_pend_event to 0.001 second.
 ;
@@ -1534,7 +1534,7 @@ PRO caInit,flag, help=help , print=print
 ;       None.
 ;
 ; PROCEDURE:
-;	This routine uses Ezca_init() from the Ezca library.
+;	This routine uses Ezca_init() from the ezcaScan library.
 ;
 ; EXAMPLES:
 ;       IDL> caInit
@@ -1593,7 +1593,7 @@ PRO caPendEvent, time=time, help=help
 ;
 ; KEYWORD PARAMETERS:
 ;       TIME:  This keyword parameter is used to reset the timeout in seconds
-;              used by ca_pend_event in Ezca library.
+;              used by ca_pend_event in ezcaScan library.
 ;
 ;       HELP:  If ,/HELP is set, on-line help will be displayed.
 ;
@@ -1605,13 +1605,13 @@ PRO caPendEvent, time=time, help=help
 ;
 ; SIDE EFFECTS:
 ;       This routine sets the timeout for event monitor routines used in
-;       Ezca library and calls the ca_pend_event.
+;       ezcaScan library and calls the ca_pend_event.
 ;
 ; RESTRICTIONS:
 ;	Positive time must be used.
 ;
 ; PROCEDURE:
-;	This routine uses Ezca_setPendTime() from the Ezca library.
+;	This routine uses Ezca_setPendTime() from the ezcaScan library.
 ;
 ; EXAMPLES:
 ;       IDL> caPendEvent, time=0.0001
@@ -1651,7 +1651,7 @@ PRO caPendIO, time=time, list_time=list_time, help=help
 ;
 ; PURPOSE:
 ;	This routine sets the timeout used by ca_pend_io in array get/
-;       put used in Ezca library.
+;       put used in ezcaScan library.
 ;
 ; CATEGORY:
 ;       EPICS Channel Access Interface
@@ -1679,13 +1679,13 @@ PRO caPendIO, time=time, list_time=list_time, help=help
 ;
 ; SIDE EFFECTS:
 ;       These times will be used in array get/put from then on in all
-;       ca_pend_io calls in Ezca library.
+;       ca_pend_io calls in ezcaScan library.
 ;
 ; RESTRICTIONS:
 ;       Positive real times should be used in those keywords.
 ;
 ; PROCEDURE:
-;	This routine uses Ezca_setPendTime() from the Ezca library.
+;	This routine uses Ezca_setPendTime() from the ezcaScan library.
 ;
 ; EXAMPLES:
 ;       IDL> caPendIO, time=0.1, list_time=3.
@@ -1764,7 +1764,7 @@ FUNCTION caTimeStamp, name
 ;       Only single PV name is allowed in input.
 ;
 ; PROCEDURE:
-;	This routine uses Ezca_timeStamp() from the Ezca library.
+;	This routine uses Ezca_timeStamp() from the ezcaScan library.
 ;
 ; EXAMPLES:
 ;       IDL> print,caTimeStamp('chademoai1')
@@ -1831,7 +1831,7 @@ FUNCTION caSearch, name
 ;       None.
 ;
 ; PROCEDURE:
-;       This routine uses Ezca_search_list() from the Ezca library.
+;       This routine uses Ezca_search_list() from the ezcaScan library.
 ;
 ; EXAMPLES:
 ;       IDL> print,caSearch('chademoai1')
@@ -1906,7 +1906,7 @@ FUNCTION caGetError, name, x
 ;       None.
 ;
 ; PROCEDURE:
-;       This routine uses Ezca_get_error_array() from the Ezca library.
+;       This routine uses Ezca_get_error_array() from the ezcaScan library.
 ;
 ; EXAMPLES:
 ;       IDL> print,caGetError('chademoai1')
@@ -1931,7 +1931,7 @@ PRO caGetError,help=help
         print,' '
         print,"caGetError(name,err) - "
         print,'         this function returns the status of last channel access'
-	print,'         call from Ezca library.
+	print,'         call from ezcaScan library.
 	print,'         It returns 0 if OK, returns  -1 if error occured.'
 	print,' INPUT:
 	print,'      name -   single or a list of PV names
@@ -2137,7 +2137,7 @@ FUNCTION caGetArray,names,pdata,max_no=max_no,type=type, $
 ;       Only one type of data can be requested for a list of PV names.
 ;
 ; PROCEDURE:
-;	This routine uses Ezca_getArray() from the Ezca library.
+;	This routine uses Ezca_getArray() from the ezcaScan library.
 ;
 ; EXAMPLES:
 ;       Three examples are given below.
@@ -2305,7 +2305,7 @@ FUNCTION caPutArray,names,pdata,string=string,event=event
 ;       pdata is provided for the pvname.
 ;
 ; PROCEDURE:
-;	This routine uses Ezca_putArray() from the Ezca library.
+;	This routine uses Ezca_putArray() from the ezcaScan library.
 ;
 ; EXAMPLES:
 ;       In the following example write a string value '11' to two PV
@@ -2677,6 +2677,7 @@ END
 
 FUNCTION caMonitor, name, vals, num, overflow, $
 	add=add, get=get, clear=clear, queue=queue, $
+	int=int, byte=byte, long=long, float=float, string=string, $
        check=check, zero=zero, maxqueue=maxqueue, mode=mode
 
 ;+
@@ -2717,7 +2718,7 @@ FUNCTION caMonitor, name, vals, num, overflow, $
 ;               both num and overflow variables are also returned.
 ;
 ;     QUEUE:	Set /QUEUE flag to queue the value change event for the
-;               monitored channel until the user gets them.
+;               monitored single channel until the user gets them.
 ;
 ;     MAXQUEUE: The MAXQUEUE=no must be specified if /QUEUE is specified.
 ;
@@ -2728,6 +2729,13 @@ FUNCTION caMonitor, name, vals, num, overflow, $
 ;               IF MODE=2, the /GET will not clear the QUEUE buff.
 ;               The MODE=3 uses the circulat buffer, it keeps the most
 ;               current MAXQUEUE values in the queue buffer.
+;
+;               Default Vals returned in double precision form.
+;     /INT      Return Vals converted to integer
+;     /LONG     Return Vals converted to long integer
+;     /BYTE     Return Vals converted to byte type 
+;     /FLOAT    Return Vals converted to float type 
+;     /STRING   Return Vals converted to string type
 ;
 ; OUTPUTS:
 ;     vals:     Returns the array of data if either keyword /GET or /CHECK
@@ -2748,7 +2756,8 @@ FUNCTION caMonitor, name, vals, num, overflow, $
 ;       this is the first time this process variable has been referenced.
 ;
 ; RESTRICTIONS:
-;       All the PV are monitored as double precision in this function.
+;       All the PVs are monitored as double values in this function
+;       unless the PV is a DBR_STRING type then monitored as string type.
 ;       For getting the monitored queue array, only a single PV name can
 ;       be specified.  For non queue type monitor, only the first value
 ;       for a PV can be returned by this function.  Use caGet to get
@@ -2758,7 +2767,7 @@ FUNCTION caMonitor, name, vals, num, overflow, $
 ;	This routine uses Ezca_monitorArrayAdd(), Ezca_monitorArrayGet(),
 ;       Ezca_monitorArrayCheck(), Ezca_monitorArrayClear(), Ezca_queueAdd(),
 ;       Ezca_queueGet(),Ezca_queueZero(), and Ezca_queueClear()
-;       from the Ezca library.
+;       from the ezcaScan library.
 ;
 ; EXAMPLES:
 ;    Single value monitor
@@ -2776,6 +2785,8 @@ FUNCTION caMonitor, name, vals, num, overflow, $
 ; MODIFICATION HISTORY:
 ;       Written by:	Ben-chin Cha      Dec, 1995
 ;       04-12-96    bkc   Modified on line help syntax
+;       04-07-99    bkc   Return monitor values specification:
+;                         /byte,/int,/long,/float,/string 
 ;-
 on_error,2              ; Return to caller IF an error occurs
         nvals = n_elements(name)
@@ -2852,6 +2863,11 @@ if nvals gt 1 then print,'Warning: Queue,/Get exceeds 1 pvname'
 	endif else begin
 	  vals = make_array(nvals,/double)
 	  ln = call_ezca('EzcaGetMonitorArray',fix(nvals),vals,name)
+	    if keyword_set(string) then ln = caGetArray(name,vals,/string)
+	    if keyword_set(byte) then vals = byte(vals)
+	    if keyword_set(float) then vals = float(vals)
+	    if keyword_set(long) then vals = long(vals)
+	    if keyword_set(int) then vals = fix(vals)
 	end
 	return,ln
         end
