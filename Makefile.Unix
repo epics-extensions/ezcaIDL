@@ -28,7 +28,7 @@ DEPLIBS =  $(EPICS_EXTENSIONS_LIB)/libezca.a \
 
 USR_INCLUDES = $(CC_SHARED) -I$(INSTALL_INCLUDE) -I$(EPICS_EXTENSIONS_INCLUDE)
 ifeq ($(HOST_ARCH),sun4)
-   USR_LDLIBS = -Bstatic -lezca -lEzca -Bdynamic -lca -lCom -lansi
+   USR_LDLIBS = -Bstatic -lezca -lEzca -Bdynamic -lca -lCom 
    USR_LDFLAGS = $(LD_SHARED) -L$(INSTALL_LIB)  -L$(EPICS_EXTENSIONS_LIB)
 else
    USR_LDLIBS = -Bstatic -lezca -lEzca -lca -lCom -Bdynamic 
