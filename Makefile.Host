@@ -35,10 +35,10 @@ ezca_DIR=$(INSTALL_LIB)
 ezcaScan_DIR=$(INSTALL_LIB)
 ezcaScanObj_DIR=$(INSTALL_LIB)
 
-ifeq ($(T_A),alpha)
+ifeq ($(HOST_ARCH),alpha)
 PROD := ezcaIDL.so
 ezcaIDL.so : ezcaIDL.c
-	ld -S -shared -o ezcaIDL.so ezcaIDL.o -L. -L$(INSTALL_LIB) -L$(EPICS_BASE)/lib/$(T_A) -lezca -lezcaScan -lca -lCom
+	ld -S -shared -o ezcaIDL.so ezcaIDL.o -L. -L$(INSTALL_LIB) -L$(EPICS_BASE_LIB) -lezca -lezcaScan -lca -lCom
 endif
 
 
