@@ -2132,6 +2132,7 @@ FUNCTION caGetArray,names,pdata,max_no=max_no,type=type, $
 ;       Written by:	Ben-chin Cha      Dec, 1995	
 ;      04-11-96     bkc    If array get failed, only the pvnames not found are 
 ;                          reported
+;      04-22-96     bkc    Replace caError by caGetError 
 ;-
 num = 1			; default to 1 value 
 wave_type = 5		; default to double
@@ -2202,7 +2203,7 @@ else $
 	ln = call_ezca('EzcaGetArrayValues',ca_type,long(num),no, $
 		pdata,string(names))
 	IF ln NE 0 THEN begin
-		ln = caError(names,p1)
+		ln = caGetError(names,p1)
 		for i=0,no-1 do begin
 		if p1(i) ne 0 then print,'Error: caGetArray failed on ',names(i)
 		end
