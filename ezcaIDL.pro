@@ -5,8 +5,8 @@ function call_Ezca, routine, p1, p2, p3, p4, p5
 ; PURPOSE:
 ;	This function calls the shareable image which contains the EZCA
 ;       routines, and the short interface routines which call EZCA.
-;       This routine is intended only to be called internally from the 
-;       routines in this file. This routine is needed in order to make this 
+;       This routine is intended only to be called internally from the
+;       routines in this file. This routine is needed in order to make this
 ;       package work with both IDL and PV-WAVE, and with both Unix and VMS.
 ;
 ; CATEGORY:
@@ -42,7 +42,7 @@ function call_Ezca, routine, p1, p2, p3, p4, p5
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 
 ; The first time through determine if we are running IDL or PV-WAVE and set
 ; things up accordingly
@@ -73,12 +73,12 @@ if (program eq 'PV-WAVE') then goto, wave
 ; This is for calling IDL
 	r = routine
 	case n_params() of
-1:	   return, call_external(IDL_object, r)
-2:	   return, call_external(IDL_object, r, p1)
-3:	   return, call_external(IDL_object, r, p1, p2)
-4:	   return, call_external(IDL_object, r, p1, p2, p3)
-5:	   return, call_external(IDL_object, r, p1, p2, p3, p4)
-6:	   return, call_external(IDL_object, r, p1, p2, p3, p4, p5)
+1:	   return, call_external(IDL_object, r, /cdecl)
+2:	   return, call_external(IDL_object, r, p1, /cdecl)
+3:	   return, call_external(IDL_object, r, p1, p2, /cdecl)
+4:	   return, call_external(IDL_object, r, p1, p2, p3, /cdecl)
+5:	   return, call_external(IDL_object, r, p1, p2, p3, p4, /cdecl)
+6:	   return, call_external(IDL_object, r, p1, p2, p3, p4, p5, /cdecl)
 	endcase
 
 wave:
@@ -137,7 +137,7 @@ function ezcaType, value
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 
     type= size(value)
     type = type(type(0)+1)
@@ -161,7 +161,7 @@ function caGetCountAndType, pvname, count, type
 ;	caGetCountAndType
 ;
 ; PURPOSE:
-;	This function returns the number of elements and data type of a 
+;	This function returns the number of elements and data type of a
 ;       Channel Access process variable.
 ;
 ; CATEGORY:
@@ -204,17 +204,17 @@ function caGetCountAndType, pvname, count, type
 ;
 ; RESTRICTIONS:
 ;       The channel access data type enum is mapped to EZCA and IDL short
-;       data types.  However, application programs can use this routine to 
+;       data types.  However, application programs can use this routine to
 ;       determine if the native channel access data type is enum, and then
-;       use caGet(pvname, value, /string) to read the string equivalent of the 
-;       process variable. Programs can also use 
+;       use caGet(pvname, value, /string) to read the string equivalent of the
+;       process variable. Programs can also use
 ;       caGetEnumStrings(pvname, strings) to read the strings for the all of
 ;       the possible values of an enum process variable.
 ;
 ; PROCEDURE:
 ;	This routine uses ezcaPvToChid() and then ca_element_count() and
 ;       ca_field_type().
-;       Note that this routine always returns its values "immediately", even 
+;       Note that this routine always returns its values "immediately", even
 ;       if it is called between a caStartGroup and caEndGroup.
 ;
 ; EXAMPLE:
@@ -227,14 +227,14 @@ function caGetCountAndType, pvname, count, type
 ;           5       3       3   ; Long data type
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
 
     ca_type = 0B
     count = 0L
     status = call_ezca('ezcaIDLGetCountAndType', string(pvname), count, ca_type)
     if (status ne 0) then return, status
-    case ca_type of 
+    case ca_type of
         0: begin            ; String
             wave_type = 7
             ezca_type = 1
@@ -275,7 +275,7 @@ end
 
 
 
-function caGet, pvname, val, string=string, max=n
+function caGet, pvname, val, string=string, maximum_elements=max
 ;+
 ; NAME:
 ;	caGet
@@ -315,7 +315,7 @@ function caGet, pvname, val, string=string, max=n
 ;               contain the data until caEndGroup is called.
 ;
 ;       The function return value of caGet is a status value.  The
-;       status is 0 if the routine was successful (i.e. the process variable 
+;       status is 0 if the routine was successful (i.e. the process variable
 ;       exists) and non-zero if the routine failed.  If caGet is called from
 ;       within an asynchronous group then the status return only indicates
 ;       whether the operation was successfully queued.
@@ -325,34 +325,34 @@ function caGet, pvname, val, string=string, max=n
 ;       are currently in an asynchronous group. This routine tests that flag.
 ;
 ; SIDE EFFECTS:
-;	This routine will causes a channel access search to take place if 
+;	This routine will causes a channel access search to take place if
 ;       this is the first time this process variable has been referenced. It
 ;       performs a ca_get, unless called as part of an asynchronous group.
 ;
 ; RESTRICTIONS:
 ;       There are two important restrictions which must be kept in mind when
-;       calling caGet from inside a "group", i.e. after calling caStartGroup 
+;       calling caGet from inside a "group", i.e. after calling caStartGroup
 ;       and before calling caEndGroup.
 ;
 ;       1) The IDL "value" variable (i.e. the second parameter
 ;       passed to caGet) must not be "re-used" or deleted before the call to
-;       caEndGroup. The reason for this is that EZCA has been passed the 
-;       address of this variable as the location in which the data is to be 
-;       copied when caEndGroup is called. Thus, this location must still 
-;       point to a valid memory location when caEndGroup is called.  
-;       If the "value" variable is re-used then IDL's behavior is 
+;       caEndGroup. The reason for this is that EZCA has been passed the
+;       address of this variable as the location in which the data is to be
+;       copied when caEndGroup is called. Thus, this location must still
+;       point to a valid memory location when caEndGroup is called.
+;       If the "value" variable is re-used then IDL's behavior is
 ;       unpredictable, and bus errors/access violations could occur.
 ;
 ;       2) When using caGet to read strings, the data type returned will be
-;       a byte array, rather than a string.  The reason has to do with the 
+;       a byte array, rather than a string.  The reason has to do with the
 ;       manner in which IDL passes strings, which requires that EZCA actually
 ;       be passed pointers to byte arrays. When caGet is called outside of a
 ;       group it automatically converts the byte array to a string before
-;       returning the value. However when caGet is called inside of a group 
-;       it cannot perform this conversion, since it cannot be done until after 
-;       the data is read, which does not occur until caEndGroup is called. 
-;       Thus, it is the user's responsibility to convert the data from a byte 
-;       array to a string after calling caEndGroup. This is done very simply 
+;       returning the value. However when caGet is called inside of a group
+;       it cannot perform this conversion, since it cannot be done until after
+;       the data is read, which does not occur until caEndGroup is called.
+;       Thus, it is the user's responsibility to convert the data from a byte
+;       array to a string after calling caEndGroup. This is done very simply
 ;       with the string() function. For more information see the example below.
 ;
 ; PROCEDURE:
@@ -381,7 +381,7 @@ function caGet, pvname, val, string=string, max=n
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
 
     common ezca_common
@@ -455,7 +455,7 @@ function caGetTimeout
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     timeout = 0.
     status = call_ezca('ezcaIDLGetTimeout', timeout)
@@ -495,7 +495,7 @@ pro caSetTimeout, timeout
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     status = call_ezca('ezcaIDLSetTimeout', float(timeout))
 end
@@ -534,7 +534,7 @@ function caGetRetryCount
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     count = 0L
     status = call_ezca('ezcaIDLGetRetryCount', count)
@@ -573,14 +573,14 @@ pro caSetRetryCount, retryCount
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     status = call_ezca('ezcaIDLSetRetryCount', long(retryCount))
 end
 
 
 
-function caPut, name, value
+function caPut, name, value, wait=wait
 ;+
 ; NAME:
 ;	caPut
@@ -603,10 +603,16 @@ function caPut, name, value
 ;               in that certain strings cannot be written to certain process
 ;               variables, and some process variables cannot be passed arrays.
 ;
+; KEYWORD PARAMETERS:
+;	WAIT:	Set this flag to force caPut to wait for a channel access
+;               callback.  The default is not to wait for a callback, using the
+;               ezca function ezcaPutOldCa.  The WAIT keyword results in a
+;               call to ezcaPut, which uses channel access callbacks.
+;
 ; OUTPUTS:
 ;       The function return value of caPut is a status value.  The
-;       status is 0 if the routine was successful (i.e. the process variable 
-;       exists and a valid value was written) and non-zero if the routine 
+;       status is 0 if the routine was successful (i.e. the process variable
+;       exists and a valid value was written) and non-zero if the routine
 ;       failed.
 ;
 ; PROCEDURE:
@@ -627,7 +633,9 @@ function caPut, name, value
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
+;       Sept. 16, 1998  Mark Rivers  Added WAIT keyword, made non-callback
+;                                    version of caput the default
 ;-
     nelem = n_elements(value)
     if (nelem eq 0) then return, -1  ; Variable not defined
@@ -638,11 +646,21 @@ function caPut, name, value
             temp(0,i) = byte(value(i))  ; Convert string to byte
             temp(39,i) = 0              ; Make sure there is a null at end
         endfor
-        status = call_ezca('ezcaIDLPut', string(name), $
+        if (keyword_set(wait)) then begin
+            status = call_ezca('ezcaIDLPut', string(name), $
                           byte(type), long(nelem), temp)
+        endif else begin
+            status = call_ezca('ezcaIDLPutOldCa', string(name), $
+                          byte(type), long(nelem), temp)
+        endelse
     endif else begin
-        status = call_ezca('ezcaIDLPut', string(name), $
+        if (keyword_set(wait)) then begin
+            status = call_ezca('ezcaIDLPut', string(name), $
                           byte(type), long(nelem), value)
+        endif else begin
+            status = call_ezca('ezcaIDLPutOldCa', string(name), $
+                          byte(type), long(nelem), value)
+        endelse
     endelse
     return, status
 end
@@ -658,8 +676,8 @@ pro caStartGroup
 ;	This procedure starts an "asynchronous group".  Within an asynchronous
 ;       group all calls to caGet and caPut are asynchronous, i.e. they queue
 ;       a request and return immediately without waiting for a reply from
-;       the channel access servers. Calling caEndGroup causes the queue to be 
-;       flushed and waits for the replies. The use of asynchronous 
+;       the channel access servers. Calling caEndGroup causes the queue to be
+;       flushed and waits for the replies. The use of asynchronous
 ;       groups can greatly improve the efficiency of channel access. The user
 ;       must be aware of the restrictions on caGet outlined under the
 ;       description of that routine.
@@ -700,7 +718,7 @@ pro caStartGroup
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     common ezca_common
     ingroup = 1
@@ -732,7 +750,7 @@ function caEndGroup, status
 ; OUTPUTS:
 ;       The function return value is 0 if the operation was successful,
 ;       otherwise it is the first encountered non-successful return code.
-;       The optional status parameter can be used to return the status code 
+;       The optional status parameter can be used to return the status code
 ;       of each operation in the group.
 ;
 ; OPTIONAL OUTPUT PARAMETERS:
@@ -756,7 +774,7 @@ function caEndGroup, status
 ;       elements, and then truncates it to the actual length.  The maximum
 ;       number of status values which can be retrieved is thus 1024. No errors
 ;       will occur if an asynchronous group has more than 1024 calls, but
-;       only the first 1024 status values can be obtained. 
+;       only the first 1024 status values can be obtained.
 ;       This is probably sufficient for most applications!
 ;
 ; EXAMPLES:
@@ -776,7 +794,7 @@ function caEndGroup, status
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     common ezca_common
     ingroup = 0
@@ -815,12 +833,12 @@ function caSetMonitor, pvname
 ;
 ; OUTPUTS:
 ;       The function return value of caSetMonitor is a status value.  The
-;       status is 0 if the routine was successful (i.e. the process variable 
+;       status is 0 if the routine was successful (i.e. the process variable
 ;       exists) and non-zero if the routine failed.
 ;
 ; PROCEDURE:
 ;	This routine uses ezcaSetMonitor(). The "type" parameter required
-;       by ezcaSetMonitor is the native EZCA data type as determined 
+;       by ezcaSetMonitor is the native EZCA data type as determined
 ;       by caGetCountAndType().
 ;
 ; EXAMPLES:
@@ -829,7 +847,7 @@ function caSetMonitor, pvname
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     status = caGetCountAndType(pvname, count, type)
     if (status ne 0) then return, status
@@ -859,12 +877,12 @@ function caClearMonitor, pvname
 ;
 ; OUTPUTS:
 ;       The function return value of caClearMonitor is a status value.  The
-;       status is 0 if the routine was successful (i.e. the process variable 
+;       status is 0 if the routine was successful (i.e. the process variable
 ;       exists) and non-zero if the routine failed.
 ;
 ; PROCEDURE:
 ;	This routine uses ezcaClearMonitor(). The "type" parameter required
-;       by ezcaClearMonitor is the native EZCA data type as determined 
+;       by ezcaClearMonitor is the native EZCA data type as determined
 ;       by caGetCountAndType().
 ;
 ; EXAMPLES:
@@ -872,7 +890,7 @@ function caClearMonitor, pvname
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     status = caGetCountAndType(pvname, count, type)
     if (status ne 0) then return, status
@@ -908,7 +926,7 @@ function caCheckMonitor, pvname
 ;
 ; PROCEDURE:
 ;	This routine uses ezcaNewMonitorValue(). The "type" parameter required
-;       by ezcaNewMonitorValue() is the native EZCA data type as determined 
+;       by ezcaNewMonitorValue() is the native EZCA data type as determined
 ;       by caGetCountAndType().
 ;
 ; EXAMPLES:
@@ -916,7 +934,7 @@ function caCheckMonitor, pvname
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     status = caGetCountAndType(pvname, count, type)
     if (status ne 0) then return, status
@@ -967,7 +985,7 @@ pro caDebug, state
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     if (state eq 0) then begin
         status = call_ezca('ezcaIDLDebugOff')
@@ -985,7 +1003,7 @@ pro caTrace, state
 ;
 ; PURPOSE:
 ;	This procedure turns the EZCA trace flag on or off. Turning on
-;       the trace flag prints lots of information which is mainly useful 
+;       the trace flag prints lots of information which is mainly useful
 ;       to developers.  Setting the trace flag results in less
 ;       verbose output than setting the debug flag (see caDebug).
 ;
@@ -1018,7 +1036,7 @@ pro caTrace, state
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     if (state eq 0) then begin
         status = call_ezca('ezcaIDLTraceOff')
@@ -1035,7 +1053,7 @@ function caGetEnumStrings, pvname, strings
 ;	caGetEnumStrings
 ;
 ; PURPOSE:
-;	This function returns all of the choice strings associated with a 
+;	This function returns all of the choice strings associated with a
 ;       Channel Access "enum" process variable. It is particularly useful
 ;       for building menus of options.
 ;
@@ -1055,11 +1073,11 @@ function caGetEnumStrings, pvname, strings
 ;               value of the enum variable.
 ;
 ;       The function return value of caGetEnumStrings is a status value.  The
-;       status is 0 if the routine was successful (i.e. the process variable 
+;       status is 0 if the routine was successful (i.e. the process variable
 ;       exists and is of type enum) and non-zero if the routine failed.
 ;
 ; SIDE EFFECTS:
-;	This routine causes a channel access read. It does not use the 
+;	This routine causes a channel access read. It does not use the
 ;       grouping mechanism of EZCA, i.e. it always executes immediately.
 ;
 ; RESTRICTIONS:
@@ -1069,7 +1087,7 @@ function caGetEnumStrings, pvname, strings
 ; PROCEDURE:
 ;	This routine uses ezcaPvToChid and then ca_get() with a request type
 ;       of DBR_GR_ENUM.  The functionality required by this routine is not
-;       presently provided directly in EZCA, although it should probably be 
+;       presently provided directly in EZCA, although it should probably be
 ;       added.
 ;
 ; EXAMPLES:
@@ -1088,7 +1106,7 @@ function caGetEnumStrings, pvname, strings
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     ; Make sure the data type is DBF_ENUM
     status = caGetCountAndType(pvname, count, type)
@@ -1119,7 +1137,7 @@ function caGetControlLimits, pvname, low, high
 ;	status = caGetControlLimits(pvname, low, high)
 ;
 ; INPUTS:
-;	pvname: The name of the process variable from which to read the 
+;	pvname: The name of the process variable from which to read the
 ;               control limits.
 ;
 ; OUTPUTS:
@@ -1128,18 +1146,18 @@ function caGetControlLimits, pvname, low, high
 ;       high:   The high control limit (double).
 
 ;       The function return value of caGetControlLimits is a status value.  The
-;       status is 0 if the routine was successful (i.e. the process variable 
+;       status is 0 if the routine was successful (i.e. the process variable
 ;       exists) and non-zero if the routine failed.
 ;
 ; PROCEDURE:
-;	This routine uses ezcaGetControlLimits(). 
+;	This routine uses ezcaGetControlLimits().
 ;
 ; EXAMPLE:
 ;       IDL> status = caGetControlLimits('test_ao1', low, high)
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     low = 0.D0
     high = 0.D0
@@ -1164,7 +1182,7 @@ function caGetGraphicLimits, pvname, low, high
 ;	status = caGetGraphicLimits(pvname, low, high)
 ;
 ; INPUTS:
-;	pvname: The name of the process variable from which to read the 
+;	pvname: The name of the process variable from which to read the
 ;               graphic limits.
 ;
 ; OUTPUTS:
@@ -1173,18 +1191,18 @@ function caGetGraphicLimits, pvname, low, high
 ;       high:   The high graphic limit (double).
 
 ;       The function return value of caGetGraphicLimits is a status value.  The
-;       status is 0 if the routine was successful (i.e. the process variable 
+;       status is 0 if the routine was successful (i.e. the process variable
 ;       exists) and non-zero if the routine failed.
 ;
 ; PROCEDURE:
-;	This routine uses ezcaGetGraphicLimits(). 
+;	This routine uses ezcaGetGraphicLimits().
 ;
 ; EXAMPLE:
 ;       IDL> status = caGetGraphicLimits('test_ao1', low, high)
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     low = 0.D0
     high = 0.D0
@@ -1209,25 +1227,25 @@ function caGetPrecision, pvname, precision
 ;	status = caGetPrecision(pvname, precision)
 ;
 ; INPUTS:
-;	pvname: The name of the process variable from which to read the 
+;	pvname: The name of the process variable from which to read the
 ;               precision.
 ;
 ; OUTPUTS:
 ;       precision:  The precision (short).
 
 ;       The function return value of caGetPrecision is a status value.  The
-;       status is 0 if the routine was successful (i.e. the process variable 
+;       status is 0 if the routine was successful (i.e. the process variable
 ;       exists) and non-zero if the routine failed.
 ;
 ; PROCEDURE:
-;	This routine uses ezcaGetPrecision(). 
+;	This routine uses ezcaGetPrecision().
 ;
 ; EXAMPLE:
 ;       IDL> status = caGetPrecision('test_ao1', precision)
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     precision = 0
     status = call_ezca('ezcaIDLGetPrecision', string(pvname), precision)
@@ -1242,7 +1260,7 @@ function caGetStatus, pvname, timestamp, status, severity
 ;	caGetStatus
 ;
 ; PURPOSE:
-;	This procedure reads the status parameters for a channel access 
+;	This procedure reads the status parameters for a channel access
 ;       process variable.
 ;
 ; CATEGORY:
@@ -1252,7 +1270,7 @@ function caGetStatus, pvname, timestamp, status, severity
 ;	status = caGetStatus(pvname, timestamp, status, severity)
 ;
 ; INPUTS:
-;	pvname: The name of the process variable from which to read the 
+;	pvname: The name of the process variable from which to read the
 ;               status parameters.
 ;
 ; OUTPUTS:
@@ -1264,18 +1282,18 @@ function caGetStatus, pvname, timestamp, status, severity
 ;       severity: The severity flag (int).
 
 ;       The function return value of caGetStatus is a status value.  The
-;       status is 0 if the routine was successful (i.e. the process variable 
+;       status is 0 if the routine was successful (i.e. the process variable
 ;       exists) and non-zero if the routine failed.
 ;
 ; PROCEDURE:
-;	This routine uses ezcaGetStatus(). 
+;	This routine uses ezcaGetStatus().
 ;
 ; EXAMPLE:
 ;       IDL> status = caGetStatus('test_ao1', timestamp, status, severity)
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     timestamp = lonarr(2)
     status = 0
@@ -1309,7 +1327,7 @@ function caGetUnits, pvname, units
 ;       units:  The units (string).
 ;
 ;       The function return value of caGetUnits is a status value.  The
-;       status is 0 if the routine was successful (i.e. the process variable 
+;       status is 0 if the routine was successful (i.e. the process variable
 ;       exists) and non-zero if the routine failed.
 ;
 ; COMMON BLOCKS:
@@ -1317,14 +1335,14 @@ function caGetUnits, pvname, units
 ;       are currently in an asynchronous group. This routine tests that flag.
 ;
 ; PROCEDURE:
-;	This routine uses ezcaGetUnits(). 
+;	This routine uses ezcaGetUnits().
 ;
 ; EXAMPLE:
 ;       IDL> status = caGetUnits('test_ao1', units)
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     common ezca_common
     units = bytarr(40)
@@ -1379,18 +1397,18 @@ pro caError, err_string, on=on, off=off, print=print, prefix=prefix
 ;       are currently in an asynchronous group. This routine tests that flag.
 ;
 ; PROCEDURE:
-;	This routine uses ezcaPerror(), ezcaAutoErrorMessageOn(), 
+;	This routine uses ezcaPerror(), ezcaAutoErrorMessageOn(),
 ;       ezcaAutoErrorMessageOff(), and ezcaGetErrorString()
 ;
 ; EXAMPLE:
 ;       IDL> ; Define a prefix and turn on error messages
-;       IDL> caError, prefix='My program', /ON  
+;       IDL> caError, prefix='My program', /ON
 ;       IDL> ; Fetch the last error message
 ;       IDL> caError, err_string
 ;
 ; MODIFICATION HISTORY:
 ; 	Written by:	Mark Rivers
-;	June 28, 1995	
+;	June 28, 1995
 ;-
     common ezca_common
 
@@ -1430,8 +1448,8 @@ FUNCTION caVersion
 ;       caVersion
 ;
 ; PURPOSE:
-;       This function returns the string of current version information 
-;       about ezcaIDL 
+;       This function returns the string of current version information
+;       about ezcaIDL
 ;
 ; CATEGORY:
 ;       EPICS Channel Access Interface
@@ -1443,7 +1461,7 @@ FUNCTION caVersion
 ;       None.
 ;
 ; OUTPUTS:
-;       Return the string which gives the version information about 
+;       Return the string which gives the version information about
 ;       ezcaIDL, ezca, Ezca, and EPICS base verion number.
 ;
 ; PROCEDURE:
@@ -1458,14 +1476,14 @@ FUNCTION caVersion
 ;
 	str='                                                                 '
         ln = call_ezca('EzcaVersion',str)
-	str = 'ezcaIDL 2.0 '+ strmid(str,0,50)
+	str = 'ezcaIDL 2.0 '+ strmid(str,0,60)
         return,str
 END
 
 PRO caVersion, help=help
         print,' '
         print,"caVersion() - "
-        print,'         to get ezcaIDL version information which includes 
+        print,'         to get ezcaIDL version information which includes
 	print,'         ezca, Ezca, and EPICS base version
         print,'  e.g.'
         print,'        str = caVersion()'
@@ -1481,7 +1499,7 @@ PRO caInit,flag, help=help , print=print
 ;	caInit
 ;
 ; PURPOSE:
-;	This routine sets the channel access timeout used by list array 
+;	This routine sets the channel access timeout used by list array
 ;       functions defined in Ezca library.
 ;
 ; CATEGORY:
@@ -1504,11 +1522,11 @@ PRO caInit,flag, help=help , print=print
 ;       None.
 ;
 ; SIDE EFFECTS:
-;       This routine set the channel access timeout values used in the 
-;       Ezca library.  This routine set the timeout to 3 seconds for 
-;       lists of process variables, and sets the timeout for 
-;       ca_pend_event to 0.001 second. 
-; 
+;       This routine set the channel access timeout values used in the
+;       Ezca library.  This routine set the timeout to 3 seconds for
+;       lists of process variables, and sets the timeout for
+;       ca_pend_event to 0.001 second.
+;
 ;       If a value of -1 is specified for the flag, the default value
 ;       of 10 seconds for lists of process variables will be used.
 ;
@@ -1536,14 +1554,14 @@ help1:
         print,' '
         print,"caInit [,flag]   - "
 	print,'
-	print,'   If flag is not set, the default timeout used by list 
-	print,'   array  functions  
+	print,'   If flag is not set, the default timeout used by list
+	print,'   array  functions
         print,'         set 1.0 second for single process variables'
         print,'         set 3.0 second for lists of process variables'
         print,'         set .001 second for ca_pend_event'
 	print,'
-	print,'   If flag is set to -1, the default timeout used by list 
-	print,'   array  functions  
+	print,'   If flag is set to -1, the default timeout used by list
+	print,'   array  functions
         print,'         set 5.0 second for single process variables'
         print,'         set 10.0 second for lists of process variables'
         print,'         set .001 second for ca_pend_event'
@@ -1586,7 +1604,7 @@ PRO caPendEvent, time=time, help=help
 ;       None.
 ;
 ; SIDE EFFECTS:
-;       This routine sets the timeout for event monitor routines used in 
+;       This routine sets the timeout for event monitor routines used in
 ;       Ezca library and calls the ca_pend_event.
 ;
 ; RESTRICTIONS:
@@ -1596,10 +1614,10 @@ PRO caPendEvent, time=time, help=help
 ;	This routine uses Ezca_setPendTime() from the Ezca library.
 ;
 ; EXAMPLES:
-;       IDL> caPendEvent, time=0.0001 
+;       IDL> caPendEvent, time=0.0001
 ;
 ; MODIFICATION HISTORY:
-; 	Written by:	Ben-chin Cha      Dec, 1995	
+; 	Written by:	Ben-chin Cha      Dec, 1995
 ;-
         if keyword_set(help) then goto, help1
         if (n_elements(time) ne 0) then begin
@@ -1648,7 +1666,7 @@ PRO caPendIO, time=time, list_time=list_time, help=help
 ;	TIME:   Use the TIME=time keyword to set the timeout waiting for
 ;               channel access I/O for single process variable name.
 ;
-;	LIST_TIME: Use the LIST_TIME=list_time keyword to set the timeout 
+;	LIST_TIME: Use the LIST_TIME=list_time keyword to set the timeout
 ;               waiting for channel access I/O for a list of PV names.
 ;
 ;       HELP:   If ,/HELP is specified, on line help will be displayed.
@@ -1667,14 +1685,14 @@ PRO caPendIO, time=time, list_time=list_time, help=help
 ;       Positive real times should be used in those keywords.
 ;
 ; PROCEDURE:
-;	This routine uses Ezca_setPendTime() from the Ezca library. 
+;	This routine uses Ezca_setPendTime() from the Ezca library.
 ;
 ; EXAMPLES:
 ;       IDL> caPendIO, time=0.1, list_time=3.
 ;       IDL> caPendIO, /help
 ;
 ; MODIFICATION HISTORY:
-; 	Written by:	Ben-chin Cha      Dec, 1995	
+; 	Written by:	Ben-chin Cha      Dec, 1995
 ;-
         if keyword_set(help) then goto, help1
         if (n_elements(time) ne 0) then begin
@@ -1697,7 +1715,7 @@ help1:
         print,'         Use the list_time keyword to set the time out for
         print,'         lists of process variables.
         print, ''
-        print,'        These times will be used in array get/put from then 
+        print,'        These times will be used in array get/put from then
 	print,'        on in all ca_pend_io calls.'
         print,''
         print,' e.g.'
@@ -1709,7 +1727,7 @@ END
 
 ;
 ;
-FUNCTION caTimeStamp, name 
+FUNCTION caTimeStamp, name
 ;+
 ; NAME:
 ;	caTimeStamp
@@ -1733,14 +1751,14 @@ FUNCTION caTimeStamp, name
 ;
 ; OUTPUTS:
 ;	string:  The function returns the time stamp string for the requested
-;                PV name. 
+;                PV name.
 ;
 ; COMMON BLOCKS:
 ;       None.
 ;
 ; SIDE EFFECTS:
-;	This routine will causes a channel access search to take place if 
-;       this is the first time this process variable has been referenced. 
+;	This routine will causes a channel access search to take place if
+;       this is the first time this process variable has been referenced.
 ;
 ; RESTRICTIONS:
 ;       Only single PV name is allowed in input.
@@ -1752,7 +1770,7 @@ FUNCTION caTimeStamp, name
 ;       IDL> print,caTimeStamp('chademoai1')
 ;
 ; MODIFICATION HISTORY:
-; 	Written by:	Ben-chin Cha      Dec, 1995	
+; 	Written by:	Ben-chin Cha      Dec, 1995
 ;-
 on_error,2              ; Return to caller IF an error occurs
         val = string(make_array(33, /byte, value=32))
@@ -1793,7 +1811,7 @@ FUNCTION caSearch, name
 ;       Status = caSearch(pvname)
 ;
 ; INPUTS:
-;      pvname: The variable for a list of process variables for which the 
+;      pvname: The variable for a list of process variables for which the
 ;              channel access search to be done.
 ;
 ; KEYWORD PARAMETERS:
@@ -1806,7 +1824,7 @@ FUNCTION caSearch, name
 ;       None.
 ;
 ; SIDE EFFECTS:
-;       This routine will causes a channel access search to take place if 
+;       This routine will causes a channel access search to take place if
 ;       this is the first time pvnames has been referenced.
 ;
 ; RESTRICTIONS:
@@ -1821,7 +1839,7 @@ FUNCTION caSearch, name
 ;       IDL> status = caSearch(x)
 ;
 ; MODIFICATION HISTORY:
-;       Written by:	Ben-chin Cha      Dec, 1995	
+;       Written by:	Ben-chin Cha      Dec, 1995
 ;      04-11-96   bkc   Fix typo error names to name
 ;-
 on_error,2              ; Return to caller IF an error occurs
@@ -1867,7 +1885,7 @@ FUNCTION caGetError, name, x
 ;       Status = caGetError(Pvname,Err)
 ;
 ; INPUTS:
-;      Pvname: The variable for a list of process variables for which the 
+;      Pvname: The variable for a list of process variables for which the
 ;              channel access return code to be checked.
 ;
 ; KEYWORD PARAMETERS:
@@ -1875,13 +1893,13 @@ FUNCTION caGetError, name, x
 ;
 ; OUTPUTS:
 ;       Err:  The corresponding return code(s) for the Pvname(s) are returned.
-;             Returns array of 0 or 1. 0 indicates success, 1 indicates failed. 
+;             Returns array of 0 or 1. 0 indicates success, 1 indicates failed.
 ;
 ; COMMON BLOCKS:
 ;       None.
 ;
 ; SIDE EFFECTS:
-;       This routine will causes a channel access search to take place if 
+;       This routine will causes a channel access search to take place if
 ;       this is the first time pvnames has been referenced.
 ;
 ; RESTRICTIONS:
@@ -1896,7 +1914,7 @@ FUNCTION caGetError, name, x
 ;       IDL> status = caGetError(x)
 ;
 ; MODIFICATION HISTORY:
-;       Written by:	Ben-chin Cha      Dec, 1995	
+;       Written by:	Ben-chin Cha      Dec, 1995
 ;-
         no = n_elements(name)
 ; check for null string first
@@ -1905,7 +1923,7 @@ for i=0,no-1 do begin
 	end
         x = make_array(no,/long)
         ln = call_ezca('EzcaGetError',fix(no),long(x),string(name))
-        return,ln 
+        return,ln
 END
 
 ; help on caGetError
@@ -1913,7 +1931,7 @@ PRO caGetError,help=help
         print,' '
         print,"caGetError(name,err) - "
         print,'         this function returns the status of last channel access'
-	print,'         call from Ezca library. 
+	print,'         call from Ezca library.
 	print,'         It returns 0 if OK, returns  -1 if error occured.'
 	print,' INPUT:
 	print,'      name -   single or a list of PV names
@@ -1932,8 +1950,8 @@ PRO caGetArray,help=help
 print,' '
 print,"status = caGetArray(names,pdata,max=no,type=i,/TYPE,/EVENT) "
 print,'
-print,'  This function returns 0 if everything went OK or -1 
-print,'  if something went wrong during the get. 
+print,'  This function returns 0 if everything went OK or -1
+print,'  if something went wrong during the get.
 print,'
 print,'  The names can be a list of PV names or a single PV name.
 print,'  The pdata argument returns the array of data obtained.
@@ -1943,7 +1961,7 @@ print,'  The keyword type=i is used to specify the IDL type of
 print,'  data to be returned for each record in the list.'
 print,'
 print,'  If both max and type are not specified, and single PV is
-print,'  entered the native data array is returned for the PV. 
+print,'  entered the native data array is returned for the PV.
 print,'
 print,'  INPUT:    names      -  A list of PV names
 print,'
@@ -1984,7 +2002,7 @@ print,'
 print,'            /EVENT     - If specified use the ca_array_get_callback
 print,'                         otherwise use the ca_array_get
 print,'
-print,'            /PRINT     - Only if this keyword is specified, then every 
+print,'            /PRINT     - Only if this keyword is specified, then every
 print,'                         channel not found will be printed.
 print,''
 print,' e.g.'
@@ -2007,7 +2025,7 @@ print,'  OUTPUT:
 print,'           types      -   Returns the native data types
 print,'                          for the PV names
 print,'
-print,'           counts     -   Returns the native element counts 
+print,'           counts     -   Returns the native element counts
 print,'                          for the PV names
 print,'
 print,'           idl_types -   Returns the corresponding IDL data types
@@ -2056,7 +2074,7 @@ FUNCTION caGetArray,names,pdata,max_no=max_no,type=type, $
 ;       caGetArray
 ;
 ; PURPOSE:
-;       This function reads values for a list of Channel Access process 
+;       This function reads values for a list of Channel Access process
 ;       variable. It returns 0 if successful, returns -1 if failed.
 ;
 ; CATEGORY:
@@ -2066,7 +2084,7 @@ FUNCTION caGetArray,names,pdata,max_no=max_no,type=type, $
 ;       Status = caGetArray(names,pdata,max=no,type=i,/TYPE,/EVENT)
 ;
 ; INPUTS:
-;       names:	The variable for a list of channel access PV names for which 
+;       names:	The variable for a list of channel access PV names for which
 ;               the array of data is to be returned.
 ;
 ; KEYWORD PARAMETERS:
@@ -2075,21 +2093,21 @@ FUNCTION caGetArray,names,pdata,max_no=max_no,type=type, $
 ;              must be specified. If the `no' specified is greater than the
 ;              native count, zeros will be padded in the output array.
 ;
-;              If only one PV name is input, then caGetArray returns 
-;              the native element count for the process variable. Setting 
-;              MAX to a number less than the native count this will cause 
+;              If only one PV name is input, then caGetArray returns
+;              the native element count for the process variable. Setting
+;              MAX to a number less than the native count this will cause
 ;              caGetArray to return only the first MAX values for the PV.
 ;
-;      TYPE:   This keyword specifies the IDL data type to be returned by 
-;              the output array. If not specified, it defaults to 5, i.e. 
-;              double precision type of data will be returned by the 
+;      TYPE:   This keyword specifies the IDL data type to be returned by
+;              the output array. If not specified, it defaults to 5, i.e.
+;              double precision type of data will be returned by the
 ;              output array.
 ;
 ;                1 - byte      2 - short       3 - long      4 - float
 ;                5 - double    7 - string
 ;
 ;     /TYPE    Instead of type=i a user can use the IDL data type keyword
-;              directly, the data type keyword supercedes the type=i 
+;              directly, the data type keyword supercedes the type=i
 ;              specification. Valid types given below
 ;
 ;                            /double
@@ -2103,7 +2121,7 @@ FUNCTION caGetArray,names,pdata,max_no=max_no,type=type, $
 ;              the ca_array_get
 ;
 ; OUTPUTS:
-;     pdata:  The output variable,  pdata(max,noNames), returns the data 
+;     pdata:  The output variable,  pdata(max,noNames), returns the data
 ;             array for the requested list of PV names. The `max' is the no
 ;             of values specified by the keyword MAX, the `noNames' is the
 ;             number of PV names in the input variable names.
@@ -2112,19 +2130,19 @@ FUNCTION caGetArray,names,pdata,max_no=max_no,type=type, $
 ;       None.
 ;
 ; SIDE EFFECTS:
-;       This routine will causes a channel access search to take place if 
+;       This routine will causes a channel access search to take place if
 ;       this is the first time this process variable has been referenced.
 ;
 ; RESTRICTIONS:
-;       Only one type of data can be requested for a list of PV names. 
+;       Only one type of data can be requested for a list of PV names.
 ;
 ; PROCEDURE:
 ;	This routine uses Ezca_getArray() from the Ezca library.
 ;
 ; EXAMPLES:
-;       Three examples are given below. 
-;       The first caGetArray call returns only the first value for each PV 
-;       name, the second and third caGetArray call both returns 10 float 
+;       Three examples are given below.
+;       The first caGetArray call returns only the first value for each PV
+;       name, the second and third caGetArray call both returns 10 float
 ;       values for each PV name
 ;
 ;       IDL> names=['chademowf7','chademowf8']
@@ -2133,12 +2151,12 @@ FUNCTION caGetArray,names,pdata,max_no=max_no,type=type, $
 ;       IDL> st = caGetArray(names,pdata,max=10,type=4)
 ;
 ; MODIFICATION HISTORY:
-;       Written by:	Ben-chin Cha      Dec, 1995	
-;      04-11-96     bkc    If array get failed, only the pvnames not found are 
+;       Written by:	Ben-chin Cha      Dec, 1995
+;      04-11-96     bkc    If array get failed, only the pvnames not found are
 ;                          reported
-;      04-22-96     bkc    Replace caError by caGetError 
+;      04-22-96     bkc    Replace caError by caGetError
 ;-
-num = 1			; default to 1 value 
+num = 1			; default to 1 value
 wave_type = 5		; default to double
 if keyword_set(string) then type=7
 if keyword_set(double) then type=5
@@ -2164,7 +2182,7 @@ if no eq 1 then begin
 	wave_type = wty(0)
 	end
 
-if n_elements(type) gt 0 then wave_type = type 
+if n_elements(type) gt 0 then wave_type = type
 if n_elements(max_no) gt 0 then num = max_no
 
 	case wave_type of             ; wave_type
@@ -2247,13 +2265,13 @@ print,'        print,pd
 print,''
 END
 
-FUNCTION caPutArray,names,pdata,string=string,event=event 
+FUNCTION caPutArray,names,pdata,string=string,event=event
 ;+
 ; NAME:
 ;       caPutArray
 ;
 ; PURPOSE:
-;       This function writes an array of data to a list of Channel Access 
+;       This function writes an array of data to a list of Channel Access
 ;       process variable. It returns 0 if successful, else retuns -1.
 ;
 ; CATEGORY:
@@ -2263,9 +2281,9 @@ FUNCTION caPutArray,names,pdata,string=string,event=event
 ;       Status = caPutArray(pvname, pdata, /event)
 ;
 ; INPUTS:
-;       pvname:	The variable specifies a list of process variables for 
+;       pvname:	The variable specifies a list of process variables for
 ;               which the input array of data is to be written to IOC.
-;       pdata:  Input data array. The data array must be consistant with 
+;       pdata:  Input data array. The data array must be consistant with
 ;               the number of PV names defined in the pvname.
 ;
 ; KEYWORD PARAMETERS:
@@ -2279,7 +2297,7 @@ FUNCTION caPutArray,names,pdata,string=string,event=event
 ;      None.
 ;
 ; SIDE EFFECTS:
-;       This routine will causes a channel access search to take place if 
+;       This routine will causes a channel access search to take place if
 ;       this is the first time this process variable has been referenced.
 ;
 ; RESTRICTIONS:
@@ -2291,7 +2309,7 @@ FUNCTION caPutArray,names,pdata,string=string,event=event
 ;
 ; EXAMPLES:
 ;       In the following example write a string value '11' to two PV
-;       names: chademomask1.VAL  and chademoai2.VAL 
+;       names: chademomask1.VAL  and chademoai2.VAL
 ;
 ;       IDL> x = ['chademomask1', 'chademoai2']
 ;       IDL> y = make_array(1, 2, /string)
@@ -2311,7 +2329,7 @@ FUNCTION caPutArray,names,pdata,string=string,event=event
 ;       IDL> print,pd
 ;
 ; MODIFICATION HISTORY:
-;       Written by:	Ben-chin Cha      Dec, 1995	
+;       Written by:	Ben-chin Cha      Dec, 1995
 ;-
 no = fix(n_elements(names))
 ; check for null string first
@@ -2394,12 +2412,12 @@ PRO caScan,help=help
 	print,'caScan(name,pvnames,nonames,npts,vals,op_keyword,max=no) -
 	print,'      Add/Get/Zero/Clear monitor of the specified name and pvnames
 	print,'
-	print,'      Input:    
+	print,'      Input:
 	print,'       name    -   pvname for triggering scanning'
 	print,'       pvnames -   a list of detector pvnames monitored by the trigger name'
 	print,'
-	print,'      Output:    
-	print,'         nonames - no of detector pvnames triggered by name 
+	print,'      Output:
+	print,'         nonames - no of detector pvnames triggered by name
 	print,'         npts    - no of points so far detected for each pvname
 	print,'                   if /GET option is specified
 	print,'         vals    - array holds the detected values
@@ -2414,7 +2432,7 @@ PRO caScan,help=help
 	print,'        /CLEAR     clear monitor
 	print,'                      Return 0 for success, -1 for failure
 	print,'         /GET      get scan array of monitor values back
-	print,'                      Return -1 for failure 
+	print,'                      Return -1 for failure
 	print,'                      Return 1 if scan is not triggered yet
 	print,'                      Return >1 if real data detected
 	READ,'MORE... ',n
@@ -2447,7 +2465,7 @@ FUNCTION caScan, name, pvnames, nonames, npts, vals, add=add, get=get, clear=cle
 ;       caScan
 ;
 ; PURPOSE:
-;       This function provides add/get/zero/clear monitor features on a 
+;       This function provides add/get/zero/clear monitor features on a
 ;       scan record and a set of PV names.
 ;
 ; CATEGORY:
@@ -2457,15 +2475,15 @@ FUNCTION caScan, name, pvnames, nonames, npts, vals, add=add, get=get, clear=cle
 ;       Status = caScan(name,pvnames,nonames,npts,vals,op_keyword,max=no)
 ;
 ; INPUTS:
-;       name:   The name of the process variable which has control of 
+;       name:   The name of the process variable which has control of
 ;               triggering scan, e.g. the scan record name.
 ;       pvnames: A list of detector process variables for which the values
 ;                are to be monitored by the trigger name.
 ;
 ; KEYWORD PARAMETERS:
-;      ADD:     Set this flag /ADD  to add a complete set of monitor for 
-;               name and pvnames. 
-;               Return 0 if successful, -1 if failed, 1 if old monitor 
+;      ADD:     Set this flag /ADD  to add a complete set of monitor for
+;               name and pvnames.
+;               Return 0 if successful, -1 if failed, 1 if old monitor
 ;               already existed. If succeeds, the output variable npts
 ;               is set to the number of data to be detected, and the
 ;               nonames is set to the number of PVs in pvnames.
@@ -2475,8 +2493,8 @@ FUNCTION caScan, name, pvnames, nonames, npts, vals, add=add, get=get, clear=cle
 ;
 ;      GET:     Set this flag /GET to get scan array of monitor values back.
 ;               Return -1 if failed, return 1 if scan is properly set up but
-;               not triggered yet, return >1 if real data detected. 
-;               If succeeds, the npts is set to the number of data so far 
+;               not triggered yet, return >1 if real data detected.
+;               If succeeds, the npts is set to the number of data so far
 ;               detected.
 ;
 ;      ZERO:    Set this flag /ZERO to zero the allocated space.
@@ -2488,16 +2506,16 @@ FUNCTION caScan, name, pvnames, nonames, npts, vals, add=add, get=get, clear=cle
 ;
 ; OUTPUTS:
 ;     nonames:  This variable returns the number of PVs in pvnames.
-;     npts:     This variable returns the current number of data points 
+;     npts:     This variable returns the current number of data points
 ;               detected by the scan record.
-;     vals:     This detector data array buff, vals(nonames,max), stores   
+;     vals:     This detector data array buff, vals(nonames,max), stores
 ;               the detected data so far captured.
 ;
 ; COMMON BLOCKS:
 ;       None.
 ;
 ; SIDE EFFECTS:
-;       This routine will causes a channel access search to take place if 
+;       This routine will causes a channel access search to take place if
 ;       this is the first time this process variable has been referenced.
 ;
 ; RESTRICTIONS:
@@ -2524,14 +2542,14 @@ FUNCTION caScan, name, pvnames, nonames, npts, vals, add=add, get=get, clear=cle
 ;       IDL> print,caScan('name',pvnames,/clear,max=100)
 ;
 ; MODIFICATION HISTORY:
-;       Written by:	Ben-chin Cha      Dec, 1995	
+;       Written by:	Ben-chin Cha      Dec, 1995
 ;
 ;-
 on_error,2		; Return to caller IF an error occurs
 	if n_elements(name) gt 1 then begin
 		print,'Error: only one name string is allowed'
 		return, -1
-		end	
+		end
         add = keyword_set(add)
         get = keyword_set(get)
         clear = keyword_set(clear)
@@ -2547,7 +2565,7 @@ on_error,2		; Return to caller IF an error occurs
 ;	IF ln NE 0 THEN print,'Error: caScan,/clear failed on ',name
 	return,ln
 	end
-; zero 
+; zero
 	if (zero) then begin
 	nonames=fix(n_elements(name))
 	ln = call_ezca('EzcaMonitorScan_Zero',nonames,string(name))
@@ -2560,11 +2578,11 @@ on_error,2		; Return to caller IF an error occurs
 	if (n_elements(max) eq 0) then begin
 		st = caget(name+'.NPTS',npts)
 		if npts le 0 then return, -1
-	endif else npts = max 
+	endif else npts = max
 	if (n_elements(max) ne 0) then npts = fix(max > npts)
 	npts= npts +1
 ; add
-	if (add) then begin 
+	if (add) then begin
 	ln = call_ezca('EzcaMonitorScan_Add',npts,nonames,string(name),string(pvnames))
 	IF ln EQ -1 THEN print,'Error: caScan/add failed on ',name
 	IF ln EQ 1 THEN print,'Error: old monitor on ',name
@@ -2592,7 +2610,7 @@ PRO caMonitor,help=help
         print,''
 	print,'  INPUT:   names      -   A single or a list of pvnames
 	print,'
-	print,'  OUTPUT:  vals       -   Returns the array of data if either keyword /GET 
+	print,'  OUTPUT:  vals       -   Returns the array of data if either keyword /GET
 	print,'                          or /CHECK is specified
 	print,'           num        -   Returns the real number of data in the vals array
 	print,'                          for the /QUEUE mode
@@ -2610,19 +2628,19 @@ PRO caMonitor,help=help
         print,'                Clear CA monitor and free space for the  specified name.'
         print,'                Return 0 for success, -1 for failure.'
         print,'             /CHECK
-        print,'                Check whether any event happened for the list. 
+        print,'                Check whether any event happened for the list.
         print,'                Return 0 for success, -1 for failure.'
 	print,'                The output vals array variable contains event flags,
 	print,'                0 -  no new event detected
-	print,'                1 -  new value change event detected 
+	print,'                1 -  new value change event detected
         print,'             /GET
         print,'                Get monitor values back for the specified name.'
         print,'                Different values are returned for different type of monitor.
         print,'                If no queue type specified, the vals array returns the current
-	print,'                values for the PVs. 
+	print,'                values for the PVs.
         print,'                If the keyword /QUEUE is specified, in addition of
 	print,'                vals array both the number of data and the buffer full
-	print,'                indicator are returned. 
+	print,'                indicator are returned.
         print,''
         print,'         Type_keyword:'
         print,'             /QUEUE [, MODE=i ]
@@ -2666,7 +2684,7 @@ FUNCTION caMonitor, name, vals, num, overflow, $
 ;       caMonitor
 ;
 ; PURPOSE:
-;       This function provides Add/Get/Check/Clear monitor features on a 
+;       This function provides Add/Get/Check/Clear monitor features on a
 ;       single PV or a list of PV names.
 ;
 ; CATEGORY:
@@ -2693,29 +2711,29 @@ FUNCTION caMonitor, name, vals, num, overflow, $
 ;
 ;     GET:      Set /GET to get monitor values back for the specified name.
 ;               Different type of monitor returns different vals array.
-;               If non queue type monitor set, the vals array returns a 
+;               If non queue type monitor set, the vals array returns a
 ;               single value for each PV in the name variable.
 ;               If the kewword /QUEUE is specified, in addition of vals,
 ;               both num and overflow variables are also returned.
 ;
-;     QUEUE:	Set /QUEUE flag to queue the value change event for the 
-;               monitored channel until the user gets them. 
+;     QUEUE:	Set /QUEUE flag to queue the value change event for the
+;               monitored channel until the user gets them.
 ;
 ;     MAXQUEUE: The MAXQUEUE=no must be specified if /QUEUE is specified.
 ;
 ;     MODE:     This flag indicates what type of monitor queue is desired.
-;               The MODE=i where i can be 1/2/3, it defaults to 1. The 
-;               MODE=1 or 2 monitor fills the QUEUE buff until it is fulled. 
+;               The MODE=i where i can be 1/2/3, it defaults to 1. The
+;               MODE=1 or 2 monitor fills the QUEUE buff until it is fulled.
 ;               If MODE=1, the /GET will clear the QUEUE buff.
 ;               IF MODE=2, the /GET will not clear the QUEUE buff.
-;               The MODE=3 uses the circulat buffer, it keeps the most 
-;               current MAXQUEUE values in the queue buffer. 
+;               The MODE=3 uses the circulat buffer, it keeps the most
+;               current MAXQUEUE values in the queue buffer.
 ;
 ; OUTPUTS:
 ;     vals:     Returns the array of data if either keyword /GET or /CHECK
 ;               is specified
 ;
-;     num:      Returns the real number of data in the vals array for the 
+;     num:      Returns the real number of data in the vals array for the
 ;               /QUEUE mode
 ;
 ;     overflow: Returns the buffer full indicator for the /QUEUE mode
@@ -2726,20 +2744,20 @@ FUNCTION caMonitor, name, vals, num, overflow, $
 ;       None.
 ;
 ; SIDE EFFECTS:
-;       This routine will causes a channel access search to take place if 
+;       This routine will causes a channel access search to take place if
 ;       this is the first time this process variable has been referenced.
 ;
 ; RESTRICTIONS:
 ;       All the PV are monitored as double precision in this function.
 ;       For getting the monitored queue array, only a single PV name can
 ;       be specified.  For non queue type monitor, only the first value
-;       for a PV can be returned by this function.  Use caGet to get 
+;       for a PV can be returned by this function.  Use caGet to get
 ;       array type of values back.
 ;
 ; PROCEDURE:
 ;	This routine uses Ezca_monitorArrayAdd(), Ezca_monitorArrayGet(),
 ;       Ezca_monitorArrayCheck(), Ezca_monitorArrayClear(), Ezca_queueAdd(),
-;       Ezca_queueGet(),Ezca_queueZero(), and Ezca_queueClear() 
+;       Ezca_queueGet(),Ezca_queueZero(), and Ezca_queueClear()
 ;       from the Ezca library.
 ;
 ; EXAMPLES:
@@ -2750,13 +2768,13 @@ FUNCTION caMonitor, name, vals, num, overflow, $
 ;       IDL> print,caMonitor('chademoai1',/clear)
 ;
 ;    Use queue array monitor with maxqueue=100
-; 
+;
 ;       IDL> print, caMonitor('chademoai1',/add,/queue,maxqueue=100)
 ;       IDL> print, caMonitor('chademoai1',vals,num,overflow,/get,/queue,maxqueue=100)
 ;       IDL> print, caMonitor('chademoai1',/clear,/queue)
 ;
 ; MODIFICATION HISTORY:
-;       Written by:	Ben-chin Cha      Dec, 1995	
+;       Written by:	Ben-chin Cha      Dec, 1995
 ;       04-12-96    bkc   Modified on line help syntax
 ;-
 on_error,2              ; Return to caller IF an error occurs
@@ -2771,7 +2789,7 @@ on_error,2              ; Return to caller IF an error occurs
 	      ln = call_ezca('EzcaClearMonitorArray',fix(nvals),name)
 	return,ln
         end
-;check 
+;check
 	check = keyword_set(check)
         if (check) then begin
 	vals = make_array(nvals,/long)
