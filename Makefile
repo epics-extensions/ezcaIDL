@@ -22,7 +22,10 @@ HTMLS = ezcaIDLGuide.html ezcaIDLRef.html
 
 SCRIPTS_HOST = ezcaIDL.pro ezcaIDLWidgets.pro
 
-LOADABLE_LIBRARY_HOST = ezcaIDL
+SHARED_LIBRARIES=YES
+LOADABLE_LIBRARY_HOST_Darwin = ezcaIDL
+LIBRARY_HOST_DEFAULT = ezcaIDL
+LIBRARY_HOST_Darwin = -nil-
 ezcaIDL_SRCS = ezcaIDL.c
 ezcaIDL_LIBS += ezca EzcaScan ca Com
 
