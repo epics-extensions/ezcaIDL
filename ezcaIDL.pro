@@ -2975,3 +2975,7 @@ FUNCTION caMonitor, name, vals, num, overflow, $
     endif
 END
 
+; This is a dummy procedure, needed to make a .sav file
+pro ezcaIDL
+end
+
