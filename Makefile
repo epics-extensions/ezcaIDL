@@ -28,6 +28,7 @@ LIBRARY_HOST_DEFAULT = ezcaIDL
 LIBRARY_HOST_Darwin = -nil-
 ezcaIDL_SRCS = ezcaIDL.c
 ezcaIDL_LIBS += ezca EzcaScan ca Com
+ezcaIDL_SYS_LIBS_WIN32 = ws2_32 advapi32 user32
 
 include $(TOP)/configure/RULES
 endif
