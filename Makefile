@@ -10,12 +10,6 @@
 # $Id$
 #
 TOP = ../..
-#If epics/extensions/configure directory exists, build with it.
-#Otherwise use epics/extensions/config.
-ifeq (0, $(words $(notdir $(wildcard $(TOP)/configure))))
-include $(TOP)/config/CONFIG_EXTENSIONS
-include $(TOP)/config/RULES_ARCHS
-else
 include $(TOP)/configure/CONFIG
 
 HTMLS = ezcaIDLGuide.html ezcaIDLRef.html
@@ -31,4 +25,3 @@ ezcaIDL_LIBS += ezca EzcaScan ca Com
 ezcaIDL_SYS_LIBS_WIN32 = ws2_32 advapi32 user32
 
 include $(TOP)/configure/RULES
-endif
