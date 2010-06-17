@@ -20,6 +20,7 @@ SHARED_LIBRARIES=YES
 LOADABLE_LIBRARY_HOST_Darwin = ezcaIDL
 LIBRARY_HOST_DEFAULT = ezcaIDL
 LIBRARY_HOST_Darwin = -nil-
+ezcaIDL_LDFLAGS_WIN32 += /manifest
 ezcaIDL_SRCS = ezcaIDL.c
 ezcaIDL_LIBS += ezca EzcaScan ca Com
 ezcaIDL_SYS_LIBS_WIN32 = ws2_32 advapi32 user32
