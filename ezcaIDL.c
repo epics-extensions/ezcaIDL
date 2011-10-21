@@ -173,8 +173,8 @@ WAVE_HEADER3(int, ezcaIDLGetCountAndType, char, pvname, int, count, char, type)
    return EZCA_OK;
 }
 
-WAVE_HEADER2(int, ezcaIDLSetMonitor, char, pvname, char, type)
-   return(ezcaSetMonitor(pvname, *type));
+WAVE_HEADER3(int, ezcaIDLSetMonitor, char, pvname, char, type, unsigned long, count)
+   return(ezcaSetMonitor(pvname, *type, *count));
 }
 
 WAVE_HEADER2(int, ezcaIDLClearMonitor, char, pvname, char, type)
