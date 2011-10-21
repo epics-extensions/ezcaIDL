@@ -28,8 +28,7 @@ ezcaIDL.def
     A file that defines the entry points for ezcaIDL.dll on WIN32.
 
 Makefile
-Makefile.Host
-    Files to build ezcaIDL. Used to the GNU make program.
+    File to build ezcaIDL. Used to the GNU make program.
 
 DESCRIP.MMS
     A file to build ezcaIDL on VMS systems. It is used by Digital's MMS product
@@ -38,3 +37,27 @@ DESCRIP.MMS
 AXP_OPTIONS.OPT
     A VMS linker options file. This version is only for AXP systems.
 
+
+IDL finds the shareable library at run time by one of two mechanisms.
+
+1) First, it looks for the environment variable EZCA_IDL_SHARE.  If this envionment
+variable exists it must point to the complete path to ezcaIDL.dll (Windows) or
+libezcaIDL.so (all other architectures).  For example:
+
+setenv EZCA_IDL_SHARE /usr/local/lib/libezcaIDL.so
+
+2) If the shareable library is not found from the EZCA_IDL_SHARE environment variable
+then it is searched for in the !IDL_PATH.  The file name searched for is the
+following:
+
+base_!VERSION.OS_!VERSION.ARCH
+
+base is either ezcaIDL.dll (Windows) or libezcaIDL.so (all other architectures). 
+!VERSION.OS can be "linux", "Win32", etc.  !VERSION.ARCH can be "x86", "x86_64", etc. 
+Do "help, /structure, !VERSION" in IDL to see the values for your system.
+
+This mechanism can be more convenient than using EZCA_IDL_SHARE because it allows
+easy switching between 32 and 64 bit versions of IDL, and does not require setting an
+environment variable.  It does require either copying and renaming the files to a
+location in the !IDL_PATH, or creating soft links in the !IDL_PATH to point to the
+locations of the actual shareable libraries.
