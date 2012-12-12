@@ -15,7 +15,6 @@
       Mark Rivers</h3>
     <h3>
       Center for Advanced Radiation Sources</h3>
-    >
     <h3>
       University of Chicago</h3>
     <h3>
@@ -189,8 +188,9 @@
   </ul>
   <h2>
     <a id="Related">Related Documentation</a></h2>
-  In addition to this ezcaIDL Users' Guide the following documentation will be useful
-  to the IDL programmer using ezcaIDL.
+  <p>
+    In addition to this ezcaIDL Users' Guide the following documentation will be useful
+    to the IDL programmer using ezcaIDL.</p>
   <ul>
     <li><a href="ezcaIDLRef.html">ezcaIDL Reference Guide</a> This document contains a
       detailed description of all of the ezcaIDL routines. It is extracted directly from
@@ -355,9 +355,10 @@ status = caEndGroup()
   </dl>
   <h2>
     <a id="Libraries">Required Support Libraries</a></h2>
-  ezcaIDL requires the following support libraries in order to build the shareable
-  object file. Users who want to port ezcaIDL to another architecture need to port
-  these libraries first.
+  <p>
+    ezcaIDL requires the following support libraries in order to build the shareable
+    object file. Users who want to port ezcaIDL to another architecture need to port
+    these libraries first.</p>
   <pre>
     extensions/src/ezca
     extensions/src/EzcaScan
@@ -366,8 +367,11 @@ status = caEndGroup()
 </pre>
   <h2>
     <a id="UnixSetup">Unix Setup</a></h2>
-  The following additions to your <code>.login</code> file will facilitate the use
-  of ezcaIDL.<pre>
+  <p>
+    The following additions to your <code>.login</code> file will facilitate the use
+    of ezcaIDL.
+  </p>
+  <pre>
 # Define an IDL or PV-WAVE startup file to be executed when IDL or PV-WAVE are
 # started
 setenv IDL_STARTUP ~/idl_startup.pro
@@ -378,8 +382,9 @@ setenv WAVE_STARTUP ~/wave_startup.pro
 # according to where the .so file is placed on your system.
 setenv EZCA_IDL_SHARE /usr/local/epics/extensions/bin/solaris/ezcaIDL.so
 </pre>
-  In the IDL or PV-WAVE startup files (<code>~/idl_startup.pro</code> or <code>~/wave_startup.pro</code>
-  in the preceeding example <code>.login</code> file) add the following lines
+  <p>
+    In the IDL or PV-WAVE startup files (<code>~/idl_startup.pro</code> or <code>~/wave_startup.pro</code>
+    in the preceeding example <code>.login</code> file) add the following lines</p>
   <pre>
 ;
 !QUIET=1             ; So things will compile without informational messages
@@ -390,8 +395,11 @@ caInit               ; To define some required constants
 </pre>
   <h2>
     <a id="VMSSetup">VMS Setup</a></h2>
-  The following additions to your <code>LOGIN.COM</code> file will facilitate the
-  use of ezcaIDL.<pre>
+  <p>
+    The following additions to your <code>LOGIN.COM</code> file will facilitate the
+    use of ezcaIDL.
+  </p>
+  <pre>
 $! Define an IDL or PV-WAVE startup file to be executed when IDL or PV-WAVE 
 $! are started
 $ DEFINE IDL_STARTUP SYS$LOGIN:idl_startup.pro
@@ -404,8 +412,9 @@ $! your system.
 $ DEFINE ezcaIDL_EXE  PUBLIC_DISK:[PUBLIC.EPICS.EXTENSIONS.BIN]ezcaIDL.EXE
 $ DEFINE EZCA_IDL_SHARE ezcaIDL_EXE
 </pre>
-  In the IDL or PV-WAVE startup files (<code>idl_startup.pro</code> or <code>wave_startup.pro</code>
-  in the preceeding example <code>login.com</code> file) add the following lines
+  <p>
+    In the IDL or PV-WAVE startup files (<code>idl_startup.pro</code> or <code>wave_startup.pro</code>
+    in the preceeding example <code>login.com</code> file) add the following lines</p>
   <pre>
 ;
 !QUIET=1             ; So things will compile without informational messages
@@ -416,7 +425,8 @@ caInit
 </pre>
   <h2>
     <a id="Examples">Examples</a></h2>
-  The following examples illustrate how to use some of the routines in ezcaIDL.
+  <p>
+    The following examples illustrate how to use some of the routines in ezcaIDL.</p>
   <pre>
 ; Create a sine wave array, write it to a waveform record, read it back again
 ; and plot it.
