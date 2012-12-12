@@ -14,13 +14,14 @@ this routine, refer to the IDL Online Help Navigator
 or type: <P>
 <PRE>     ? mk_html_help</PRE><P>
 at the IDL command line prompt.<P>
-<STRONG>Last modified: </STRONG>Thu Sep 27 11:55:08 2001.<P>
+<STRONG>Last modified: </STRONG>Wed Dec 12 12:28:55 2012.<P>
  
 <HR>
  
 <A NAME="ROUTINELIST">
 <H1>List of Routines</H1></A>
 <UL>
+<LI><A HREF="#ADD_CAPENDEVENT">ADD_CAPENDEVENT</A>
 <LI><A HREF="#CACHECKMONITOR">CACHECKMONITOR</A>
 <LI><A HREF="#CACLEARMONITOR">CACLEARMONITOR</A>
 <LI><A HREF="#CADEBUG">CADEBUG</A>
@@ -56,6 +57,7 @@ at the IDL command line prompt.<P>
 <LI><A HREF="#CAWIDGETADJUST">CAWIDGETADJUST</A>
 <LI><A HREF="#CAWIDGETCLEARMONITOR">CAWIDGETCLEARMONITOR</A>
 <LI><A HREF="#CAWIDGETSETMONITOR">CAWIDGETSETMONITOR</A>
+<LI><A HREF="#EZCAPVNAMETOBYTE">EZCAPVNAMETOBYTE</A>
 <LI><A HREF="#EZCASTRINGTOBYTE">EZCASTRINGTOBYTE</A>
 <LI><A HREF="#RELEASE NOTES">RELEASE NOTES</A>
 </UL><P>
@@ -63,8 +65,40 @@ at the IDL command line prompt.<P>
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="ADD_CAPENDEVENT">
+<H2>ADD_CAPENDEVENT</H2></A>
+<A HREF="#CACHECKMONITOR">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+	add_caPendEvent
+
+ PURPOSE:
+	This routine start an IDL widget of sending channel access 
+       ca_pend_event call with the user specifyable timer interval.
+       Calling this rountine is required for IDL CA sesstion EPICS 3.14.4
+	otherwize many CA warning message will be printed on user's IDL
+	interactive terminal. 
+ 
+ CATEGORY:
+	Widgets
+
+ CALLING SEQUENCE:
+	add_caPendEvent,timer=timer
+
+ KEYWORD:
+   timer:  Specify the timer in seconds between each ca_pend_event call
+	    It defaults to 10 seconds.
+ EXAMPLE:
+	IDL> add_caPendEvent
+
+</PRE><P>
+<STRONG>(See ezcaIDLWidgets.pro)</STRONG><P>
+<HR>
+ 
 <A NAME="CACHECKMONITOR">
 <H2>CACHECKMONITOR</H2></A>
+<A HREF="#ADD_CAPENDEVENT">[Previous Routine]</A>
 <A HREF="#CACLEARMONITOR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1072,8 +1106,8 @@ at the IDL command line prompt.<P>
 
  PURPOSE:
        This routine sets the channel access timeout used by list array
-       functions defined in EzcaScan library.  It also sets the values of two
-       constants, MAX_STRING_SIZE and MAX_ENUM_STATES used in other functions.
+       functions defined in EzcaScan library.  It also sets the values of three
+       constants, MAX_STRING_SIZE=40, MAX_ENUM_STATES=16, and MAX_PVNAME_SIZE=128 used in other functions.
        This routine MUST be called before any other routines in this file.
 
  CATEGORY:
@@ -1093,7 +1127,7 @@ at the IDL command line prompt.<P>
        None.
 
  COMMON BLOCKS:
-       ezca_common is used to hold the values of MAX_STRING_SIZE and MAX_ENUM_STATES
+       ezca_common is used to hold the values of MAX_STRING_SIZE, MAX_ENUM_STATES, and MAX_PVNAME_SIZE
 
  SIDE EFFECTS:
        This routine set the channel access timeout values used in the
@@ -1434,7 +1468,8 @@ at the IDL command line prompt.<P>
  INPUTS:
        pvname: The variable specifies a list of process variables for
                which the input array of data is to be written to IOC.
-       pdata:  Input data array. The data array must be consistant with
+       pdata[m,N]:  Input data array, define m values for each N PV names. 
+               The data array defined must be consistant within
                the number of PV names defined in the pvname.
 
  KEYWORD PARAMETERS:
@@ -1481,6 +1516,8 @@ at the IDL command line prompt.<P>
 
  MODIFICATION HISTORY:
        Written by:     Ben-chin Cha      Dec, 1995
+       11-29-2001 bkc  If pdata is string type, convert back to string after
+                       calling EzcaPutArray
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
@@ -1656,6 +1693,7 @@ at the IDL command line prompt.<P>
 
  INPUTS:
        pvname: The name of the process variable on which to set the monitor.
+       count:  The maximum number of elements to monitor.  Default (0) is native element count
 
  OUTPUTS:
        The function return value of caSetMonitor is a status value.  The
@@ -2064,7 +2102,7 @@ at the IDL command line prompt.<P>
 <A NAME="CAWIDGETSETMONITOR">
 <H2>CAWIDGETSETMONITOR</H2></A>
 <A HREF="#CAWIDGETCLEARMONITOR">[Previous Routine]</A>
-<A HREF="#EZCASTRINGTOBYTE">[Next Routine]</A>
+<A HREF="#EZCAPVNAMETOBYTE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -2149,9 +2187,54 @@ at the IDL command line prompt.<P>
 <STRONG>(See ezcaIDLWidgets.pro)</STRONG><P>
 <HR>
  
+<A NAME="EZCAPVNAMETOBYTE">
+<H2>EZCAPVNAMETOBYTE</H2></A>
+<A HREF="#CAWIDGETSETMONITOR">[Previous Routine]</A>
+<A HREF="#EZCASTRINGTOBYTE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+       ezcaPVNameToByte
+
+ PURPOSE:
+       This function converts an array of PV names to a 2-D byte array
+
+ CATEGORY:
+       EPICS Channel Access Interface
+
+ CALLING SEQUENCE:
+       byt = ezcaPVNameToByte(Str, Num)
+
+ INPUTS:
+       Str:   A 1-D array of EPICS PV names.
+
+ OUTPUTS:
+       This function returns a 2-D byte [MAX_PVNAME_SIZE, n_elements(Str)] which
+       is the input string array converted to fixed-length byte arrays.
+
+       Num: Returns n_elements(Str) as a short integer
+
+ COMMON BLOCKS:
+       ezca_common holds the value of MAX_PVNAME_SIZE.
+
+ EXAMPLE:
+       IDL> str = ['a', 'b', 'c']
+       IDL> byt = ezcaStringToByte(str, num)
+       IDL> help, byt, num
+       BYT             BYTE      = Array[61, 3]
+       NUM             INT       =        3
+
+ MODIFICATION HISTORY:
+       Written by:   Mark Rivers, 11-Dec-2012.  This function was added and all routines
+                     that previously called ezcaStringToByte for PV names were changed to use
+                     this function because it allows 60 character names, rather than 40.
+</PRE><P>
+<STRONG>(See ezcaIDL.pro)</STRONG><P>
+<HR>
+ 
 <A NAME="EZCASTRINGTOBYTE">
 <H2>EZCASTRINGTOBYTE</H2></A>
-<A HREF="#CAWIDGETSETMONITOR">[Previous Routine]</A>
+<A HREF="#EZCAPVNAMETOBYTE">[Previous Routine]</A>
 <A HREF="#RELEASE NOTES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -2168,12 +2251,11 @@ at the IDL command line prompt.<P>
        byt = ezcaStringToByte(Str, Num)
 
  INPUTS:
-       Str:   A 1-D array of strings, typically EPICS PV names.
+       Str:   A 1-D array of strings.  Do not use this function for EPICS PV names, use ezcaPVNameToByte below.
 
  OUTPUTS:
-       This function returns a 2-D byte [MAX_STRING_SIZE, n_elements(Str)] which
+       This function returns a 2-D byte array [MAX_STRING_SIZE, n_elements(Str)] which
        is the input string array converted to fixed-length byte arrays.
-               is specified
 
        Num: Returns n_elements(Str) as a short integer
 
@@ -2184,11 +2266,14 @@ at the IDL command line prompt.<P>
        IDL> str = ['a', 'b', 'c']
        IDL> byt = ezcaStringToByte(str, num)
        IDL> help, byt, num
-       BYT             BYTE      = Array[132, 3]
+       BYT             BYTE      = Array[40, 3]
        NUM             INT       =        3
 
  MODIFICATION HISTORY:
        Written by:   Mark Rivers, 26-Sep-2001
+       MLR 28-Nov-2001  Previous version replaced null string ("") with a single
+                        blank character.  This was bad, unused scan record PVs were
+                        coming up unable to connect.  Removed this replacement.
 </PRE><P>
 <STRONG>(See ezcaIDL.pro)</STRONG><P>
 <HR>
