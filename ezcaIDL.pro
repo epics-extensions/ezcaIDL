@@ -84,7 +84,7 @@ function call_Ezca, routine, p1, p2, p3, p4, p5
 ; The first time through determine if we are running IDL or PV-WAVE and set
 ; things up accordingly
 
-common ezca_common, program, IDL_object, ingroup, MAX_STRING_SIZE, MAX_ENUM_STATES, PVNAME_STRINGSZ
+common ezca_common, program, IDL_object, ingroup, MAX_STRING_SIZE, MAX_ENUM_STATES, MAX_PVNAME_SIZE
 
 if (n_elements(program) eq 0) then begin
     if (strpos(strupcase(!dir), 'IDL') ne -1) then program='IDL' else program='PV-WAVE'
@@ -201,13 +201,13 @@ function ezcaPVNameToByte, str, num
 ;       Str:   A 1-D array of EPICS PV names.
 ;
 ; OUTPUTS:
-;       This function returns a 2-D byte [PVNAME_STRINGSZ, n_elements(Str)] which
+;       This function returns a 2-D byte [MAX_PVNAME_SIZE, n_elements(Str)] which
 ;       is the input string array converted to fixed-length byte arrays.
 ;
 ;       Num: Returns n_elements(Str) as a short integer
 ;
 ; COMMON BLOCKS:
-;       ezca_common holds the value of PVNAME_STRINGSZ.
+;       ezca_common holds the value of MAX_PVNAME_SIZE.
 ;
 ; EXAMPLE:
 ;       IDL> str = ['a', 'b', 'c']
@@ -225,11 +225,11 @@ function ezcaPVNameToByte, str, num
     common ezca_common
 
     num = fix(n_elements(str))
-    byt = bytarr(PVNAME_STRINGSZ, num)
+    byt = bytarr(MAX_PVNAME_SIZE, num)
     for i=0,num-1 do begin
         byt[0, i] = byte(str[i])
         ; Make sure string is null terminated
-        byt[PVNAME_STRINGSZ-1, i] = 0
+        byt[MAX_PVNAME_SIZE-1, i] = 0
     endfor
     return, byt
 end
@@ -1704,10 +1704,11 @@ PRO caInit,flag, help=help , print=print
     ; The following constants are in ezca_common.
     ; NOTE: MAX_STRING_SIZE must agree with the value in base/include/epicsTypes.h
     ; NOTE: MAX_ENUM_STATES must agree with the value in base/include/db_access.h
-    ; NOTE: PVNAME_SZ must agree with the value in base/include/dbDefs.h
+    ; NOTE: MAX_PVNAME_SIZE should be larger than PVNAME_STRINGSZ (=61) from dbDefs.h, since that does not
+    ;       include the field name.  We make it 128 to allow for future expansion.
     MAX_STRING_SIZE = 40
     MAX_ENUM_STATES = 16
-    PVNAME_STRINGSZ = 61
+    MAX_PVNAME_SIZE = 128
 
     if keyword_set(help) then goto, help1
     int = 0
