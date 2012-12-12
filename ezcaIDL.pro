@@ -1653,8 +1653,8 @@ PRO caInit,flag, help=help , print=print
 ;
 ; PURPOSE:
 ;       This routine sets the channel access timeout used by list array
-;       functions defined in EzcaScan library.  It also sets the values of two
-;       constants, MAX_STRING_SIZE and MAX_ENUM_STATES used in other functions.
+;       functions defined in EzcaScan library.  It also sets the values of three
+;       constants, MAX_STRING_SIZE=40, MAX_ENUM_STATES=16, and MAX_PVNAME_SIZE=128 used in other functions.
 ;       This routine MUST be called before any other routines in this file.
 ;
 ; CATEGORY:
@@ -1674,7 +1674,7 @@ PRO caInit,flag, help=help , print=print
 ;       None.
 ;
 ; COMMON BLOCKS:
-;       ezca_common is used to hold the values of MAX_STRING_SIZE and MAX_ENUM_STATES
+;       ezca_common is used to hold the values of MAX_STRING_SIZE, MAX_ENUM_STATES, and MAX_PVNAME_SIZE
 ;
 ; SIDE EFFECTS:
 ;       This routine set the channel access timeout values used in the
