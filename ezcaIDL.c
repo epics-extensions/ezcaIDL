@@ -18,6 +18,9 @@
 
 #define OK      0
 
+/* Note: this must agree with the value defined in ezcaIDL.pro */
+#define MAX_PVNAME_SIZE 128
+
 
 /*      ezcaIDL.c
 *
@@ -43,7 +46,7 @@
 
 static char* str_array_addr[1000];
 #define BUILD_STR_ARRAY(len, s) \
-    for (i=0; i<len; i++) str_array_addr[i]=s + MAX_STRING_SIZE*i
+    for (i=0; i<len; i++) str_array_addr[i]=s + MAX_PVNAME_SIZE*i
 #define STR_ARRAY_ADDR(s) str_array_addr
 
 
