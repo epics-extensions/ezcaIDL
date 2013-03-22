@@ -304,6 +304,9 @@ WAVE_HEADER1(int, EzcaDebug, short, flag)
 }
 
 WAVE_HEADER1(int, EzcaInit, short, flag)
+        /* Note: We must call SOME function in ezca before we call the first function in EzcaScan
+         * in order to initialize channel access */
+        ezcaGetTimeout();
         return(Ezca_init(*flag));
 }
 
