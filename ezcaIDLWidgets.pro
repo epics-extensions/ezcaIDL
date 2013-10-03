@@ -30,11 +30,11 @@ PRO caWidgetDump, pv, widget_id, timer=time
 common caWidgetCommon, mon_names, mon_pointers, mon_wids, wevent, wbase, poll_time
 
 print, 'mon_names = ' 
-for i=0, n_elements(mon_names)-1 do print, '       ', mon_names(i)
+for i=0, n_elements(mon_names)-1 do print, '       ', mon_names[i]
 print, 'mon_pointers = '
-for i=0, n_elements(mon_pointers)-1 do print, '       ', mon_pointers(i)
+for i=0, n_elements(mon_pointers)-1 do print, '       ', mon_pointers[i]
 print, 'mon_wids = '
-for i=0, n_elements(mon_wids)-1 do print, '       ', mon_wids(i)
+for i=0, n_elements(mon_wids)-1 do print, '       ', mon_wids[i]
 print, 'poll_time = ', poll_time
 end
 
@@ -93,8 +93,8 @@ bad = where((mon_pointers eq pointer) and (mon_wids eq widget_id),count)
 if (count le 0) then return, 0	; This wasn't a widget we were monitoring
 
 ; Clear the entries in mon_pointers and mon_names
-mon_pointers(bad) = -1
-mon_wids(bad) = -1
+mon_pointers[bad] = -1
+mon_wids[bad] = -1
 
 ; Now check to see if there are any other widgets monitoring this pv.
 t = where((mon_pointers eq pointer), count)
@@ -102,7 +102,7 @@ if (count le 0) then begin
    ; No other widgets are monitoring this pv so clear the entry in 
    ; mon_names and stop the channel access monitoring of this pv.
    t = caClearMonitor(pv)
-   mon_names(pointer) = ""
+   mon_names[pointer] = ""
 endif
 end
 
@@ -209,13 +209,13 @@ common caWidgetCommon
 	endif else begin
 	   ; Look and see if the pv is already being monitored
 	   index = where(pv eq mon_names)
-	   index = index(0)
+	   index = index[0]
 	   if (index lt 0) then begin  ; This is a new name
 		; See if there are any unused array elements in mon_names
 		index = where(mon_names eq "")
-		index = index(0)
+		index = index[0]
 		if (index ge 0) then begin	; Yes, put new name there
-		   mon_names(index) = pv
+		   mon_names[index] = pv
 		endif else begin
 		   index = n_elements(mon_names) ; No, append new name to end
 		   mon_names = [mon_names, pv]
@@ -225,10 +225,10 @@ common caWidgetCommon
 	   if (not found) then begin
 		; See if there are any unused array elements in mon_pointers
 		free = where(mon_pointers eq -1)
-		free = free(0)
+		free = free[0]
 		if (free ge 0) then begin	; Yes, put new pointer there
-		   mon_pointers(free) = index
-		   mon_wids(free) = widget_id
+		   mon_pointers[free] = index
+		   mon_wids[free] = widget_id
 		endif else begin		; No, append new entries to end
 		   mon_pointers = [mon_pointers, index]
 		   mon_wids = [mon_wids, widget_id]
@@ -270,13 +270,13 @@ common caWidgetCommon
 ; This routine is called periodically to check for monitors
 ; Look through all the pvs we are monitoring
 	for i=0, n_elements(mon_names)-1 do begin
-	   name = mon_names(i)
+	   name = mon_names[i]
 	   if (name eq "") then goto, skip
 	   if (caCheckMonitor(name) eq 0) then goto, skip
 	   ; Look for widgets waiting for this monitor
 	   index = where((mon_pointers eq i), count)
 	   for j=0, count-1 do begin
-		wid = mon_wids(index(j))
+		wid = mon_wids[index[j]]
 		if (widget_info(wid, /valid)) then begin
 		   wevent.id = wid
 		   wevent.name = name
@@ -313,9 +313,9 @@ case event.id of
 	  0: widget_control, widget_ids.string, set_value=val
 	  3: begin
 		for i=0, t.n_buttons-1 do begin
-		   widget_control, widget_ids.buttons(i), set_button=0
+		   widget_control, widget_ids.buttons[i], set_button=0
 		endfor
-		widget_control, widget_ids.buttons(val), set_button=1
+		widget_control, widget_ids.buttons[val], set_button=1
 	     end    
 	  else: widget_control, widget_ids.slider, set_value=val
 	endcase
@@ -339,7 +339,7 @@ case event.id of
    else: begin
     ; Was one of the buttons in a menu pressed?
 	button = where(event.id eq widget_ids.buttons)
-	button = button(0)
+	button = button[0]
 	if (button ne -1) then begin
 	   t = caput(pv, button)
 	endif else begin
@@ -428,7 +428,7 @@ widget_ids.name = widget_label(col1, value='PV = '+pv)
 
 ; Here we switch according to the data type of the field
 status = caGetCountAndType(pv, count, type)
-pv_type = type(0)
+pv_type = type[0]
 if pv_type eq 0 then begin
    ; This is a string variable
    status = caget(pv, value)
@@ -440,7 +440,7 @@ endif else if pv_type eq 3 then begin
           value, col1 
    ; Now find out which enum value is presently selected and select that button
    status = caGet(pv, value)
-   widget_control, button_ids(value), set_button=1
+   widget_control, button_ids[value], set_button=1
    widget_ids.buttons = button_ids 
    n_buttons = n_elements(button_ids)
 endif else begin
