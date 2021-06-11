@@ -2749,7 +2749,7 @@ FUNCTION caScan, name, pvnames, nonames, npts, vals, add=add, get=get, clear=cle
 ; get
     if (get) then begin
         vals = dblarr(nonames,npts)
-        ln = call_ezca('EzcaMonitorScan_Get', npts, nonames, vals, $
+        ln = call_ezca('EzcaMonitorScan_Get', npts, vals, $
                         ezcaPVNameToByte(name))
         return,ln
     end
