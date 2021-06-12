@@ -38,11 +38,12 @@ libezcaIDL.so (all other architectures).  For example:
 setenv EZCA_IDL_SHARE /usr/local/lib/libezcaIDL.so
 ```
 2) If the shareable library is not found from the EZCA_IDL_SHARE environment variable
-then it is searched for in the !IDL_PATH.  The file name searched for is the
-following:
+then it is searched for in the IDL search path, which is contained in the IDL system varable !IDL_PATH.
+The file name searched for is the following:
 ```
 base_!VERSION.OS_!VERSION.ARCH
 ```
+In the above:
 - base is either ezcaIDL.dll (Windows) or libezcaIDL.so (all other architectures). 
 - !VERSION.OS can be "linux", "Win32", etc.  
 - !VERSION.ARCH can be "x86", "x86_64", etc. 
