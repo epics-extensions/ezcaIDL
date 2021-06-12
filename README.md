@@ -48,6 +48,11 @@ base_!VERSION.OS_!VERSION.ARCH
 - !VERSION.ARCH can be "x86", "x86_64", etc. 
 - Do "help, /structure, !VERSION" in IDL to see the values for your system.
 
+Examples:
+```
+ezcaIDL.dll_Win32_x86_64
+libezcaIDL.so_linux_x86_64
+```
 This mechanism can be more convenient than using EZCA_IDL_SHARE because it allows
 easy switching between 32 and 64 bit versions of IDL, and does not require setting an
 environment variable.  It does require either copying and renaming the files to a
