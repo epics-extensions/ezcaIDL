@@ -47,9 +47,22 @@ In the above:
 - base is either ezcaIDL.dll (Windows) or libezcaIDL.so (all other architectures). 
 - !VERSION.OS can be "linux", "Win32", etc.  
 - !VERSION.ARCH can be "x86", "x86_64", etc. 
-- Do "help, /structure, !VERSION" in IDL to see the values for your system.
+- Execute the "help, !VERSION" command in IDL to see the values for your system. Example:
+```
+IDL> help, !VERSION
+** Structure !VERSION, 8 tags, length=104, data length=100:
+   ARCH            STRING    'x86_64'
+   OS              STRING    'linux'
+   OS_FAMILY       STRING    'unix'
+   OS_NAME         STRING    'linux'
+   RELEASE         STRING    '8.8.0'
+   BUILD_DATE      STRING    'Jul 22 2020 (388929)'
+   MEMORY_BITS     INT             64
+   FILE_OFFSET_BITS
+                   INT             64
+```
 
-Examples:
+Examples of file names in !IDL_PATH:
 ```
 ezcaIDL.dll_Win32_x86_64
 libezcaIDL.so_linux_x86_64
