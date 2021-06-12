@@ -172,7 +172,7 @@ WAVE_HEADER3(int, ezcaIDLGetCountAndType, char, pvname, int, count, char, type)
    status = ezcaPvToChid(pvname, &chid);
    if (status != EZCA_OK) return(status);
    *count = ca_element_count(*chid);
-   *type = ca_field_type(*chid);
+   *type = (char)ca_field_type(*chid);
    return EZCA_OK;
 }
 
@@ -387,7 +387,7 @@ int i;
         return(Ezca_scanClearMonitor(*no,STR_ARRAY_ADDR(str2)));
 }
 
-WAVE_HEADER4(int, EzcaMonitorScan_Get,short,npts, short,no, double, d, char, str)
+WAVE_HEADER3(int, EzcaMonitorScan_Get,short,npts, double, d, char, str)
         *npts = Ezca_scanGetMonitor(str,d);
         return(*npts);
 }
