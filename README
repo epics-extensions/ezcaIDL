@@ -1,7 +1,16 @@
 ezcaIDL is a library of routines for IDL and PV-WAVE which provides an
-interface to EPICS Channel Access through the EZCA library. It is intended to
-replace the existing CaWave extension. ezcaIDL has been built and tested on
-solaris, sun4, WIN32, alpha, Linux, SGI, and AXP/VMS systems.
+interface to EPICS Channel Access through the EZCA library.
+ezcaIDL has been built and tested on WIN32, Linux, MacOS.
+
+It is built as a DLL on Windows and a shareable library on Linux and MacOS.
+The code library is structured as follows:
+    ezcaIDL  (wrapper functions that use the calling conventions of the IDL call_external() function)
+       |
+    ezca (implements Channel Access functions without requiring client callbacks)
+       |
+    EzcaScan (implements some advanced Channel Access functions)
+       |
+    EPICS base (Com and ca libraries implement channel access and OS-independent utility functions)
 
 The following files are contained in the ezcaIDL directory.
 
@@ -24,19 +33,8 @@ makeEzcaIDLRef.pro
     An IDL procedure to build ezcaIDLRef.html from the documentation headers in
     ezcaIDL.PRO and ezcaIDLWidgets.pro.
 
-ezcaIDL.def
-    A file that defines the entry points for ezcaIDL.dll on WIN32.
-
 Makefile
-    File to build ezcaIDL. Used to the GNU make program.
-
-DESCRIP.MMS
-    A file to build ezcaIDL on VMS systems. It is used by Digital's MMS product
-    or the public domain MMK program.
-
-AXP_OPTIONS.OPT
-    A VMS linker options file. This version is only for AXP systems.
-
+    File to build ezcaIDL. Used by the GNU make program.
 
 IDL finds the shareable library at run time by one of two mechanisms.
 
@@ -59,5 +57,5 @@ Do "help, /structure, !VERSION" in IDL to see the values for your system.
 This mechanism can be more convenient than using EZCA_IDL_SHARE because it allows
 easy switching between 32 and 64 bit versions of IDL, and does not require setting an
 environment variable.  It does require either copying and renaming the files to a
-location in the !IDL_PATH, or creating soft links in the !IDL_PATH to point to the
+location in the !IDL_PATH, or creating soft-links in the !IDL_PATH to point to the
 locations of the actual shareable libraries.
