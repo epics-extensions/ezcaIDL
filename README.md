@@ -43,9 +43,10 @@ following:
 ```
 base_!VERSION.OS_!VERSION.ARCH
 ```
-base is either ezcaIDL.dll (Windows) or libezcaIDL.so (all other architectures). 
-!VERSION.OS can be "linux", "Win32", etc.  !VERSION.ARCH can be "x86", "x86_64", etc. 
-Do "help, /structure, !VERSION" in IDL to see the values for your system.
+- base is either ezcaIDL.dll (Windows) or libezcaIDL.so (all other architectures). 
+- !VERSION.OS can be "linux", "Win32", etc.  
+- !VERSION.ARCH can be "x86", "x86_64", etc. 
+- Do "help, /structure, !VERSION" in IDL to see the values for your system.
 
 This mechanism can be more convenient than using EZCA_IDL_SHARE because it allows
 easy switching between 32 and 64 bit versions of IDL, and does not require setting an
