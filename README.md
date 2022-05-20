@@ -5,6 +5,11 @@ ezcaIDL has been built and tested on WIN32, Linux, MacOS.
 
 It is built as a DLL on Windows and a shareable library on Linux and MacOS.
 
+When building on Windows the windows-x64-static architecture should be used.
+This will create an ezcaIDL.dll file that is self-contained, i.e. it will contain
+the code for ca and Com from EPICS base, and for ezca and EzcaScan from EPICS extensions.
+This eliminates the need to set the PATH to include these directories.
+
 The code library is structured from top to bottom as follows:
 - ezcaIDL  (wrapper functions that use the calling conventions of the IDL call_external() function)
 - ezca (implements Channel Access functions without requiring client callbacks)
